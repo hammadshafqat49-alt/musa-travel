@@ -7,7 +7,11 @@ export async function POST(request: Request) {
   try {
     const { code, email, password } = await request.json();
 
+<<<<<<< HEAD
     const agent = await db.prepare("SELECT * FROM agents WHERE code = ? AND email = ? AND password = ?").get(code, email, password) as any;
+=======
+    const agent = db.prepare("SELECT * FROM agents WHERE code = ? AND email = ? AND password = ?").get(code, email, password) as any;
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
 
     if (!agent) {
       return NextResponse.json({ error: "Invalid agent code, email or password" }, { status: 401 });

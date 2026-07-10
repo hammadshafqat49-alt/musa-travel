@@ -1,8 +1,13 @@
 import { getOneWayGroups } from "@/lib/data";
 import Link from "next/link";
 
+<<<<<<< HEAD
 export default async function OneWayGroupsPage() {
   const groups = await getOneWayGroups() as any[];
+=======
+export default function OneWayGroupsPage() {
+  const groups = getOneWayGroups() as any[];
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">

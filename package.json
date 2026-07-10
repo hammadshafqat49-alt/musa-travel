@@ -10,8 +10,13 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
+<<<<<<< HEAD
     "@libsql/client": "^0.15.4",
     "bcryptjs": "^3.0.3",
+=======
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.11.1",
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jose": "^6.2.3",
@@ -28,6 +33,10 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
+<<<<<<< HEAD
+=======
+    "@types/better-sqlite3": "^7.6.13",
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

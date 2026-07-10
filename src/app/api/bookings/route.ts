@@ -27,7 +27,11 @@ export async function POST(request: Request) {
     let totalAmount = 0;
 
     if (type === "package" && package_id) {
+<<<<<<< HEAD
       const pkg = await db
+=======
+      const pkg = db
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
         .prepare(
           "SELECT price, sharing_price, double_price, triple_price, quad_price, quint_price FROM umrah_packages WHERE id = ?"
         )
@@ -46,7 +50,11 @@ export async function POST(request: Request) {
       else if (room_type === "quint") unitPrice = pkg.quint_price || pkg.price || 0;
       totalAmount = unitPrice * Number(adults);
     } else if (type === "umrah" && group_id) {
+<<<<<<< HEAD
       const group = await db
+=======
+      const group = db
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
         .prepare("SELECT price FROM umrah_groups WHERE id = ?")
         .get(group_id) as any;
       if (!group) {
@@ -63,7 +71,11 @@ export async function POST(request: Request) {
       );
     }
 
+<<<<<<< HEAD
     const result = await createClientBooking({
+=======
+    const result = createClientBooking({
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
       type,
       package_id,
       group_id,

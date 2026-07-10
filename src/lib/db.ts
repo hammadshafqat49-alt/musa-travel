@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createClient } from "@libsql/client/web";
 
 const url = process.env.TURSO_DATABASE_URL;
@@ -43,6 +44,26 @@ export const db = {
 
 export async function initDb() {
   await db.exec(`
+=======
+import Database from 'better-sqlite3';
+
+let dbInstance: Database.Database | null = null;
+
+function getDb(): Database.Database {
+  if (!dbInstance) {
+    dbInstance = new Database('./musa.db');
+    dbInstance.pragma('journal_mode = WAL');
+    dbInstance.pragma('busy_timeout = 10000');
+    dbInstance.pragma('synchronous = NORMAL');
+  }
+  return dbInstance;
+}
+
+export const db = getDb();
+
+export function initDb() {
+  db.exec(`
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     CREATE TABLE IF NOT EXISTS agents (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       code TEXT UNIQUE NOT NULL,
@@ -238,19 +259,81 @@ export async function initDb() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+<<<<<<< HEAD
 }
 
 export async function seedDb() {
   const agentCount = await db.prepare('SELECT COUNT(*) as count FROM agents').get() as any;
   if (!agentCount || agentCount.count === 0) {
     await db.prepare(`
+=======
+
+  // Migration: add missing columns to umrah_packages
+  const pkgCols = db.prepare(`PRAGMA table_info(umrah_packages)`).all() as any[];
+  const pkgColNames = pkgCols.map((c) => c.name);
+  if (!pkgColNames.includes('image_url')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN image_url TEXT`);
+  }
+  if (!pkgColNames.includes('sharing_price')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN sharing_price REAL DEFAULT 0`);
+  }
+  if (!pkgColNames.includes('double_price')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN double_price REAL DEFAULT 0`);
+  }
+  if (!pkgColNames.includes('triple_price')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN triple_price REAL DEFAULT 0`);
+  }
+  if (!pkgColNames.includes('quad_price')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN quad_price REAL DEFAULT 0`);
+  }
+  if (!pkgColNames.includes('quint_price')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN quint_price REAL DEFAULT 0`);
+  }
+
+  // Migration: add missing columns to bookings
+  const bookCols = db.prepare(`PRAGMA table_info(bookings)`).all() as any[];
+  const bookColNames = bookCols.map((c) => c.name);
+  if (!bookColNames.includes('room_type')) {
+    db.exec(`ALTER TABLE bookings ADD COLUMN room_type TEXT`);
+  }
+  if (!bookColNames.includes('ticket_id')) {
+    db.exec(`ALTER TABLE bookings ADD COLUMN ticket_id INTEGER`);
+  }
+  if (!bookColNames.includes('client_name')) {
+    db.exec(`ALTER TABLE bookings ADD COLUMN client_name TEXT`);
+  }
+  if (!bookColNames.includes('client_phone')) {
+    db.exec(`ALTER TABLE bookings ADD COLUMN client_phone TEXT`);
+  }
+  if (!bookColNames.includes('client_email')) {
+    db.exec(`ALTER TABLE bookings ADD COLUMN client_email TEXT`);
+  }
+
+  // Migration: add agent_id to umrah_packages
+  const pkgCols2 = db.prepare(`PRAGMA table_info(umrah_packages)`).all() as any[];
+  const pkgColNames2 = pkgCols2.map((c) => c.name);
+  if (!pkgColNames2.includes('agent_id')) {
+    db.exec(`ALTER TABLE umrah_packages ADD COLUMN agent_id INTEGER`);
+  }
+}
+
+export function seedDb() {
+  const agentCount = db.prepare('SELECT COUNT(*) as count FROM agents').get() as { count: number };
+  if (agentCount.count === 0) {
+    db.prepare(`
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
       INSERT INTO agents (code, email, password, agency_name, contact_person, phone, city, country, balance)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run('7902', 'hafizmuhammadsiddique7@gmail.com', '1781025612', 'MUSA Hajj and Umrah travel services pvt Ltd', 'Siddique Hafiz', '03314396349', 'Lahore', 'Pakistan', 0);
   }
 
+<<<<<<< HEAD
   const pkgCount = await db.prepare('SELECT COUNT(*) as count FROM umrah_packages').get() as any;
   if (!pkgCount || pkgCount.count === 0) {
+=======
+  const pkgCount = db.prepare('SELECT COUNT(*) as count FROM umrah_packages').get() as { count: number };
+  if (pkgCount.count === 0) {
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     const packages = [
       ['Umrah by Air - Saudia', 'Saudia', '2026-07-15', '2026-07-25', 10, 145000, 18000, 'Swissotel Makkah', 'Movenpick Madina', 'https://images.unsplash.com/photo-1565058688641-6776481d1b84?w=800&auto=format&fit=crop', 145000, 175000, 155000, 145000, 140000],
       ['Umrah by Air - PIA', 'PIA', '2026-07-20', '2026-07-30', 10, 135000, 18000, 'Hilton Makkah', 'Pullman Zamzam', 'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800&auto=format&fit=crop', 135000, 165000, 145000, 135000, 130000],
@@ -259,6 +342,7 @@ export async function seedDb() {
       ['Umrah Package July', 'Saudia', '2026-07-01', '2026-07-12', 11, 155000, 18000, 'Conrad Makkah', 'Shaza Madina', 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800&auto=format&fit=crop', 155000, 185000, 165000, 155000, 150000],
       ['Umrah Package August', 'PIA', '2026-08-01', '2026-08-12', 11, 140000, 18000, 'Hyatt Regency', 'Marriott Madina', 'https://images.unsplash.com/photo-1548685913-fe6678babe8d?w=800&auto=format&fit=crop', 140000, 170000, 150000, 140000, 135000],
     ];
+<<<<<<< HEAD
     for (const p of packages) {
       await db.prepare(`INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, image_url, sharing_price, double_price, triple_price, quad_price, quint_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(...p);
     }
@@ -266,11 +350,20 @@ export async function seedDb() {
 
   const owgCount = await db.prepare('SELECT COUNT(*) as count FROM one_way_groups').get() as any;
   if (!owgCount || owgCount.count === 0) {
+=======
+    const insertPkg = db.prepare(`INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, image_url, sharing_price, double_price, triple_price, quad_price, quint_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    for (const p of packages) insertPkg.run(...p);
+  }
+
+  const owgCount = db.prepare('SELECT COUNT(*) as count FROM one_way_groups').get() as { count: number };
+  if (owgCount.count === 0) {
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     const groups = [
       ['One Way Jeddah Group', 'Jeddah', '2026-07-10', null, 'Saudia', 45000, 50, 45],
       ['One Way Madina Group', 'Madina', '2026-07-18', null, 'PIA', 52000, 40, 38],
       ['One Way Riyadh Group', 'Riyadh', '2026-08-05', null, 'Airblue', 38000, 60, 55],
     ];
+<<<<<<< HEAD
     for (const g of groups) {
       await db.prepare(`INSERT INTO one_way_groups (title, destination, departure_date, return_date, airline, price, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(...g);
     }
@@ -278,11 +371,20 @@ export async function seedDb() {
 
   const ugCount = await db.prepare('SELECT COUNT(*) as count FROM umrah_groups').get() as any;
   if (!ugCount || ugCount.count === 0) {
+=======
+    const insertOwg = db.prepare(`INSERT INTO one_way_groups (title, destination, departure_date, return_date, airline, price, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+    for (const g of groups) insertOwg.run(...g);
+  }
+
+  const ugCount = db.prepare('SELECT COUNT(*) as count FROM umrah_groups').get() as { count: number };
+  if (ugCount.count === 0) {
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     const groups = [
       ['Umrah Group July 1', '2026-07-05', '2026-07-15', 'Saudia', 95000, 10, 30, 28],
       ['Umrah Group July 2', '2026-07-12', '2026-07-22', 'PIA', 92000, 10, 30, 25],
       ['Umrah Group August 1', '2026-08-08', '2026-08-18', 'Airblue', 88000, 10, 30, 30],
     ];
+<<<<<<< HEAD
     for (const g of groups) {
       await db.prepare(`INSERT INTO umrah_groups (title, departure_date, return_date, airline, price, days, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(...g);
     }
@@ -311,6 +413,35 @@ export async function seedDb() {
 
   const ticketCount = await db.prepare('SELECT COUNT(*) as count FROM tickets').get() as any;
   if (!ticketCount || ticketCount.count === 0) {
+=======
+    const insertUg = db.prepare(`INSERT INTO umrah_groups (title, departure_date, return_date, airline, price, days, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+    for (const g of groups) insertUg.run(...g);
+  }
+
+  const hotelCount = db.prepare('SELECT COUNT(*) as count FROM hotels').get() as { count: number };
+  if (hotelCount.count === 0) {
+    db.prepare(`INSERT INTO hotels (name, city, rating, address, distance) VALUES (?, ?, ?, ?, ?)`)
+      .run('VOCO', 'Makkah', 4.5, 'UMMUL QURA STREET, IN THE AL', '100.00 Meters');
+    db.prepare(`INSERT INTO hotel_rates (hotel_id, date_from, date_to, sharing_price, double_price, triple_price, quad_price, quint_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(1, '2026-06-27', '2026-07-31', 110, 110, 110, 110, 0);
+  }
+
+  const adminCount = db.prepare('SELECT COUNT(*) as count FROM admins').get() as { count: number };
+  if (adminCount.count === 0) {
+    db.prepare(`INSERT INTO admins (username, email, password, name, role) VALUES (?, ?, ?, ?, ?)`)
+      .run('admin', 'admin@musatravelservice.pk', 'admin123', 'System Admin', 'admin');
+  }
+
+  const downloadCount = db.prepare('SELECT COUNT(*) as count FROM downloads').get() as { count: number };
+  if (downloadCount.count === 0) {
+    db.prepare(`INSERT INTO downloads (title, file_url, category) VALUES (?, ?, ?)`).run('Umrah Packages Brochure 2026', '/downloads/brochure.pdf', 'Brochure');
+    db.prepare(`INSERT INTO downloads (title, file_url, category) VALUES (?, ?, ?)`).run('Rate Sheet July 2026', '/downloads/rates-july.pdf', 'Rates');
+    db.prepare(`INSERT INTO downloads (title, file_url, category) VALUES (?, ?, ?)`).run('Agent Terms & Conditions', '/downloads/terms.pdf', 'Legal');
+  }
+
+  const ticketCount = db.prepare('SELECT COUNT(*) as count FROM tickets').get() as { count: number };
+  if (ticketCount.count === 0) {
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     const tickets = [
       ['Saudia', 'SV-721', 'Lahore', 'Jeddah', '2026-07-15', '03:30', null, null, 'economy', 'oneway', 85000, 50, 50],
       ['PIA', 'PK-743', 'Karachi', 'Jeddah', '2026-07-18', '06:00', null, null, 'economy', 'oneway', 78000, 40, 40],
@@ -318,8 +449,18 @@ export async function seedDb() {
       ['Saudia', 'SV-722', 'Jeddah', 'Lahore', '2026-07-25', '14:00', null, null, 'economy', 'oneway', 82000, 50, 50],
       ['SereneAir', 'ER-812', 'Lahore', 'Jeddah', '2026-08-10', '11:45', '2026-08-20', '22:30', 'economy', 'round', 175000, 30, 30],
     ];
+<<<<<<< HEAD
     for (const t of tickets) {
       await db.prepare(`INSERT INTO tickets (airline, flight_no, from_city, to_city, departure_date, departure_time, return_date, return_time, class, ticket_type, price, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(...t);
     }
   }
 }
+=======
+    const insertTicket = db.prepare(`INSERT INTO tickets (airline, flight_no, from_city, to_city, departure_date, departure_time, return_date, return_time, class, ticket_type, price, seats, available_seats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    for (const t of tickets) insertTicket.run(...t);
+  }
+}
+
+initDb();
+seedDb();
+>>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
