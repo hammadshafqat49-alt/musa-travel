@@ -1,0 +1,37 @@
+"use client";
+
+import Link from "next/link";
+import { User, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function AdminHeader() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch("/api/admin/auth/logout", { method: "POST" });
+    router.push("/admin/login");
+    router.refresh();
+  };
+
+  return (
+    <header className="bg-white border-b px-6 py-3 flex items-center justify-between">
+      <div className="text-sm text-gray-500">
+        <Link href="/admin" className="hover:text-[#dc2626]">Home</Link>
+        <span className="mx-2">/</span>
+        <span>Admin Panel</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+          <User size={16} className="text-gray-600" />
+        </div>
+        <button
+          onClick={handleLogout}
+          className="text-gray-500 hover:text-red-500"
+          title="Logout"
+        >
+          <LogOut size={18} />
+        </button>
+      </div>
+    </header>
+  );
+}
