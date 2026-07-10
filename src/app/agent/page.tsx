@@ -1,0 +1,165 @@
+import Link from "next/link";
+import { getAgent } from "@/lib/auth";
+import { getAgentById, getLedger, getPayments, getUmrahPackages } from "@/lib/data";
+import { redirect } from "next/navigation";
+import { ArrowRight, Calculator, Wallet, Package, Plane, Calendar } from "lucide-react";
+
+export default async function AgentDashboardPage() {
+  const agentToken = await getAgent();
+  if (!agentToken) redirect("/agent/login");
+
+  const agent = getAgentById(Number(agentToken.id)) as any;
+  if (!agent) redirect("/agent/login");
+
+  const ledger = getLedger(agent.id) as any[];
+  const payments = getPayments(agent.id) as any[];
+  const agentPackages = getUmrahPackages({ agent_id: agent.id }) as any[];
+
+  const balance = agent.balance || 0;
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-[#0c1d4a]">Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Link href="/agent/packages" className="bg-[#dc2626] text-white rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg">My Packages</h3>
+              <p className="text-sm text-orange-100 mt-1">{agentPackages.length} active packages</p>
+            </div>
+            <Package size={24} className="text-orange-200" />
+          </div>
+          <div className="mt-4 flex items-center text-sm font-medium">
+            Manage <ArrowRight size={16} className="ml-1" />
+          </div>
+        </Link>
+
+        <Link href="/umrah-calculator" className="bg-[#EAB308] text-white rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg">Umrah Calculator</h3>
+              <p className="text-sm text-yellow-100 mt-1">Build custom quotes</p>
+            </div>
+            <Calculator size={24} className="text-yellow-200" />
+          </div>
+          <div className="mt-4 flex items-center text-sm font-medium">
+            Open <ArrowRight size={16} className="ml-1" />
+          </div>
+        </Link>
+
+        <Link href="/agent/tickets" className="bg-[#1e3a8a] text-white rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg">Airline Tickets</h3>
+              <p className="text-sm text-blue-100 mt-1">Browse & book admin tickets</p>
+            </div>
+            <Plane size={24} className="text-blue-200" />
+          </div>
+          <div className="mt-4 flex items-center text-sm font-medium">
+            Book Now <ArrowRight size={16} className="ml-1" />
+          </div>
+        </Link>
+
+        <Link href="/agent/bookings/package" className="bg-[#0D9488] text-white rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg">Book Packages</h3>
+              <p className="text-sm text-teal-100 mt-1">Umrah packages from admin</p>
+            </div>
+            <Calendar size={24} className="text-teal-200" />
+          </div>
+          <div className="mt-4 flex items-center text-sm font-medium">
+            Browse <ArrowRight size={16} className="ml-1" />
+          </div>
+        </Link>
+
+        <Link href="/agent/accounts" className="bg-[#EF4444] text-white rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-bold text-lg">Account Closing</h3>
+              <p className="text-sm text-red-100 mt-1">Closing Balance: {balance.toFixed(2)} PKR</p>
+            </div>
+            <Wallet size={24} className="text-red-200" />
+          </div>
+          <div className="mt-4 flex items-center text-sm font-medium">
+            Go to list <ArrowRight size={16} className="ml-1" />
+          </div>
+        </Link>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-bold">Update Your Profile</h2>
+        </div>
+        <div className="p-6">
+          <form action="/api/agent/profile" method="POST" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Agency Name</label>
+              <input
+                type="text"
+                name="agency_name"
+                defaultValue={agent.agency_name || ""}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                defaultValue={agent.email || ""}
+                disabled
+                className="w-full px-3 py-2 border rounded-md bg-gray-100 text-gray-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person Name</label>
+              <input
+                type="text"
+                name="contact_person"
+                defaultValue={agent.contact_person || ""}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone No.</label>
+              <input
+                type="text"
+                name="phone"
+                defaultValue={agent.phone || ""}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <input
+                type="text"
+                name="city"
+                defaultValue={agent.city || ""}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+              <input
+                type="text"
+                name="country"
+                defaultValue={agent.country || ""}
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <button
+                type="submit"
+                className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-6 py-2 rounded-md font-medium transition-colors"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  );
+}
