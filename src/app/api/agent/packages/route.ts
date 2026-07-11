@@ -5,11 +5,7 @@ import { db } from "@/lib/db";
 export async function GET() {
   try {
     const agent = await requireAgent();
-<<<<<<< HEAD
     const packages = await db
-=======
-    const packages = db
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
       .prepare("SELECT * FROM umrah_packages WHERE agent_id = ? ORDER BY departure_date DESC")
       .all(agent.id);
     return NextResponse.json({ packages });
@@ -30,11 +26,7 @@ export async function POST(request: Request) {
         sharing_price, double_price, triple_price, quad_price, quint_price, agent_id
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-<<<<<<< HEAD
     const result = await stmt.run(
-=======
-    const result = stmt.run(
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
       data.title,
       data.airline,
       data.departure_date,
@@ -71,11 +63,7 @@ export async function PUT(request: Request) {
     }
 
     // Verify the package belongs to this agent
-<<<<<<< HEAD
     const existing = await db.prepare("SELECT * FROM umrah_packages WHERE id = ? AND agent_id = ?").get(id, agent.id) as any;
-=======
-    const existing = db.prepare("SELECT * FROM umrah_packages WHERE id = ? AND agent_id = ?").get(id, agent.id) as any;
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     if (!existing) {
       return NextResponse.json({ error: "Package not found or not owned by you" }, { status: 403 });
     }
@@ -87,11 +75,7 @@ export async function PUT(request: Request) {
         image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?, quint_price = ?
       WHERE id = ? AND agent_id = ?
     `);
-<<<<<<< HEAD
     await stmt.run(
-=======
-    stmt.run(
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
       fields.title,
       fields.airline,
       fields.departure_date,
@@ -126,20 +110,12 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "ID required" }, { status: 400 });
     }
 
-<<<<<<< HEAD
     const existing = await db.prepare("SELECT * FROM umrah_packages WHERE id = ? AND agent_id = ?").get(Number(id), agent.id) as any;
-=======
-    const existing = db.prepare("SELECT * FROM umrah_packages WHERE id = ? AND agent_id = ?").get(Number(id), agent.id) as any;
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     if (!existing) {
       return NextResponse.json({ error: "Package not found or not owned by you" }, { status: 403 });
     }
 
-<<<<<<< HEAD
     await db.prepare("DELETE FROM umrah_packages WHERE id = ? AND agent_id = ?").run(Number(id), agent.id);
-=======
-    db.prepare("DELETE FROM umrah_packages WHERE id = ? AND agent_id = ?").run(Number(id), agent.id);
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });

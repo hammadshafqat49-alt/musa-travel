@@ -1,13 +1,8 @@
 import { getDownloads } from "@/lib/data";
 import { FileText, Download } from "lucide-react";
 
-<<<<<<< HEAD
 export default async function DownloadsPage() {
   const downloads = await getDownloads() as any[];
-=======
-export default function DownloadsPage() {
-  const downloads = getDownloads() as any[];
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">

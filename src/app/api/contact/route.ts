@@ -13,11 +13,7 @@ export async function POST(request: Request) {
       );
     }
 
-<<<<<<< HEAD
     await createContact({ name, email, phone: phone || "", subject, message });
-=======
-    createContact({ name, email, phone: phone || "", subject, message });
->>>>>>> 3cb85c9347b0bcd7c81e1b3ecd59cf1a0c6c8c5e
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json(
