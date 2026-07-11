@@ -15,9 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Musa Travel Service - Hajj & Umrah Services",
   description: "Fly Beyond Skies With Musa Travel Service - Premium Hajj and Umrah travel services",
-  icons: {
-    icon: "/icon.png",
-  },
 };
 
 export default function RootLayout({
