@@ -68,18 +68,18 @@ export async function getAllUmrahPackages() {
 
 export async function createUmrahPackage(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, status, image_url, sharing_price, double_price, triple_price, quad_price, quint_price)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, status, image_url, sharing_price, double_price, triple_price, quad_price)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  return stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price || 0, data.hotel_makkah, data.hotel_madina, data.status || 'active', data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0, data.quint_price || 0);
+  return stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price || 0, data.hotel_makkah, data.hotel_madina, data.status || 'active', data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0);
 }
 
 export async function updateUmrahPackage(id: number, data: any) {
   const stmt = db.prepare(`
-    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?, price = ?, visa_price = ?, hotel_makkah = ?, hotel_madina = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?, quint_price = ?
+    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?, price = ?, visa_price = ?, hotel_makkah = ?, hotel_madina = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
     WHERE id = ?
   `);
-  await stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price, data.hotel_makkah, data.hotel_madina, data.status, data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0, data.quint_price || 0, id);
+  await stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price, data.hotel_makkah, data.hotel_madina, data.status, data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0, id);
 }
 
 export async function deleteUmrahPackage(id: number) {
@@ -164,18 +164,18 @@ export async function getAllHotelRates() {
 
 export async function createHotelRate(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO hotel_rates (hotel_id, date_from, date_to, sharing_price, double_price, triple_price, quad_price, quint_price)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO hotel_rates (hotel_id, date_from, date_to, sharing_price, double_price, triple_price, quad_price)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  return stmt.run(data.hotel_id, data.date_from, data.date_to, data.sharing_price, data.double_price, data.triple_price, data.quad_price, data.quint_price);
+  return stmt.run(data.hotel_id, data.date_from, data.date_to, data.sharing_price, data.double_price, data.triple_price, data.quad_price);
 }
 
 export async function updateHotelRate(id: number, data: any) {
   const stmt = db.prepare(`
-    UPDATE hotel_rates SET hotel_id = ?, date_from = ?, date_to = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?, quint_price = ?
+    UPDATE hotel_rates SET hotel_id = ?, date_from = ?, date_to = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
     WHERE id = ?
   `);
-  await stmt.run(data.hotel_id, data.date_from, data.date_to, data.sharing_price, data.double_price, data.triple_price, data.quad_price, data.quint_price, id);
+  await stmt.run(data.hotel_id, data.date_from, data.date_to, data.sharing_price, data.double_price, data.triple_price, data.quad_price, id);
 }
 
 export async function deleteHotelRate(id: number) {
@@ -202,6 +202,7 @@ export async function getAllBookingsWithDetails() {
       b.type,
       b.reference_id,
       b.adults,
+      b.children,
       b.infants,
       b.total_amount,
       b.status,
@@ -227,7 +228,6 @@ export async function getAllBookingsWithDetails() {
       p.double_price,
       p.triple_price,
       p.quad_price,
-      p.quint_price,
       owg.id as ow_group_id,
       owg.title as ow_group_title,
       owg.destination as ow_group_destination,
@@ -327,8 +327,8 @@ export async function getAllTickets() {
 
 export async function createTicket(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO tickets (airline, flight_no, from_city, to_city, departure_date, departure_time, return_date, return_time, class, ticket_type, price, seats, available_seats, status, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO tickets (airline, flight_no, from_city, to_city, departure_date, departure_time, arrival_date, arrival_time, return_date, return_time, return_arrival_date, return_arrival_time, class, ticket_type, price, adult_price, child_price, infant_price, seats, available_seats, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   return stmt.run(
     data.airline,
@@ -337,11 +337,18 @@ export async function createTicket(data: any) {
     data.to_city,
     data.departure_date,
     data.departure_time || null,
+    data.arrival_date || null,
+    data.arrival_time || null,
     data.return_date || null,
     data.return_time || null,
+    data.return_arrival_date || null,
+    data.return_arrival_time || null,
     data.class || 'economy',
     data.ticket_type || 'oneway',
     data.price,
+    data.adult_price || 0,
+    data.child_price || 0,
+    data.infant_price || 0,
     data.seats || 0,
     data.available_seats || data.seats || 0,
     data.status || 'active',
@@ -351,7 +358,7 @@ export async function createTicket(data: any) {
 
 export async function updateTicket(id: number, data: any) {
   const stmt = db.prepare(`
-    UPDATE tickets SET airline = ?, flight_no = ?, from_city = ?, to_city = ?, departure_date = ?, departure_time = ?, return_date = ?, return_time = ?, class = ?, ticket_type = ?, price = ?, seats = ?, available_seats = ?, status = ?, notes = ?
+    UPDATE tickets SET airline = ?, flight_no = ?, from_city = ?, to_city = ?, departure_date = ?, departure_time = ?, arrival_date = ?, arrival_time = ?, return_date = ?, return_time = ?, return_arrival_date = ?, return_arrival_time = ?, class = ?, ticket_type = ?, price = ?, adult_price = ?, child_price = ?, infant_price = ?, seats = ?, available_seats = ?, status = ?, notes = ?
     WHERE id = ?
   `);
   await stmt.run(
@@ -361,11 +368,18 @@ export async function updateTicket(id: number, data: any) {
     data.to_city,
     data.departure_date,
     data.departure_time || null,
+    data.arrival_date || null,
+    data.arrival_time || null,
     data.return_date || null,
     data.return_time || null,
+    data.return_arrival_date || null,
+    data.return_arrival_time || null,
     data.class || 'economy',
     data.ticket_type || 'oneway',
     data.price,
+    data.adult_price ?? 0,
+    data.child_price ?? 0,
+    data.infant_price ?? 0,
     data.seats || 0,
     data.available_seats ?? data.seats ?? 0,
     data.status || 'active',

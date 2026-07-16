@@ -117,39 +117,39 @@ export default function AdminAgentsPage() {
           </p>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Agent Code (username) *</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Agent Code (username) *</label>
               <input required placeholder="e.g. 7902" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Email *</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Email *</label>
               <input required type="email" placeholder="agent@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#dc2626] mb-1">Password *</label>
+              <label className="block text-xs font-bold text-[#dc2626] mb-1">Password *</label>
               <input required={!editing} type="password" placeholder={editing ? "Leave blank to keep current" : "Set a password for the agent"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="w-full px-3 py-2 border-2 border-[#dc2626]/50 rounded-md text-sm bg-red-50/30" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Agency Name</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Agency Name</label>
               <input placeholder="Agency Name" value={form.agency_name} onChange={(e) => setForm({ ...form, agency_name: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Contact Person</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Contact Person</label>
               <input placeholder="Contact Person" value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Phone</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Phone</label>
               <input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">City</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">City</label>
               <input placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Country</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Country</label>
               <input placeholder="Country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#0c1d4a] mb-1">Balance (PKR)</label>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Balance (PKR)</label>
               <input type="number" placeholder="0" value={form.balance} onChange={(e) => setForm({ ...form, balance: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div className="md:col-span-3 flex justify-end gap-2">
@@ -165,15 +165,15 @@ export default function AdminAgentsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Code</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Agency</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Contact</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Phone</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">City</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Balance</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Code</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Agency</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Email</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Contact</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Phone</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">City</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Balance</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">

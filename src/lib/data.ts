@@ -71,8 +71,8 @@ export async function createBooking(data: any) {
 
 export async function createClientBooking(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO bookings (agent_id, type, reference_id, package_id, group_id, ticket_id, adults, infants, total_amount, status, room_type, client_name, client_phone, client_email, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO bookings (agent_id, type, reference_id, package_id, group_id, ticket_id, adults, children, infants, total_amount, status, room_type, client_name, client_phone, client_email, notes, transport_included)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   return stmt.run(
     data.agent_id || null,
@@ -82,6 +82,7 @@ export async function createClientBooking(data: any) {
     data.group_id || null,
     data.ticket_id || null,
     data.adults,
+    data.children || 0,
     data.infants,
     data.total_amount,
     data.status || 'pending',
@@ -89,7 +90,8 @@ export async function createClientBooking(data: any) {
     data.client_name,
     data.client_phone,
     data.client_email,
-    data.notes || null
+    data.notes || null,
+    data.transport_included ? 1 : 0
   );
 }
 

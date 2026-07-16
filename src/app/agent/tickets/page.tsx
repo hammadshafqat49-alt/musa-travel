@@ -114,6 +114,7 @@ export default function AgentTicketsPage() {
               </div>
 
               <div className="p-5 flex-1 flex flex-col">
+                {/* Outbound */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-center">
                     <p className="text-xs text-gray-500 uppercase tracking-wider">From</p>
@@ -130,15 +131,34 @@ export default function AgentTicketsPage() {
                   </div>
                 </div>
 
+                {/* Return Flight */}
+                {t.ticket_type === "round" && t.return_date && (
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">From</p>
+                      <p className="text-lg font-bold text-[#0c1d4a]">{t.to_city}</p>
+                    </div>
+                    <div className="flex-1 mx-3 flex items-center">
+                      <div className="flex-1 border-t-2 border-dashed border-gray-300"></div>
+                      <Plane size={16} className="text-[#0D9488] mx-2" />
+                      <div className="flex-1 border-t-2 border-dashed border-gray-300"></div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">To</p>
+                      <p className="text-lg font-bold text-[#0c1d4a]">{t.from_city}</p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-3 text-sm mb-4">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Clock size={14} className="text-[#dc2626]" />
-                    <span>{t.departure_date}{t.departure_time ? ` ${t.departure_time}` : ""}</span>
+                    <span>Dep: {t.departure_date}{t.departure_time ? ` ${t.departure_time}` : ""}</span>
                   </div>
-                  {t.return_date && (
+                  {t.ticket_type === "round" && t.return_date && (
                     <div className="flex items-center gap-2 text-gray-600">
-                      <Clock size={14} className="text-[#dc2626]" />
-                      <span>Return: {t.return_date}{t.return_time ? ` ${t.return_time}` : ""}</span>
+                      <Clock size={14} className="text-[#0D9488]" />
+                      <span>Ret: {t.return_date}{t.return_time ? ` ${t.return_time}` : ""}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-gray-600">

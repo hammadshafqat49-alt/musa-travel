@@ -20,7 +20,6 @@ interface Rate {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 export default function AdminHotelRatesPage() {
@@ -30,7 +29,7 @@ export default function AdminHotelRatesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Rate | null>(null);
   const [form, setForm] = useState({
-    hotel_id: "", date_from: "", date_to: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "", quint_price: "",
+    hotel_id: "", date_from: "", date_to: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "",
   });
 
   const fetchRates = async () => {
@@ -52,7 +51,7 @@ export default function AdminHotelRatesPage() {
   }, []);
 
   const resetForm = () => {
-    setForm({ hotel_id: "", date_from: "", date_to: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "", quint_price: "" });
+    setForm({ hotel_id: "", date_from: "", date_to: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -66,7 +65,6 @@ export default function AdminHotelRatesPage() {
       double_price: Number(form.double_price),
       triple_price: Number(form.triple_price),
       quad_price: Number(form.quad_price),
-      quint_price: Number(form.quint_price),
     };
     if (editing) {
       await fetch("/api/admin/hotel-rates", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
@@ -81,7 +79,7 @@ export default function AdminHotelRatesPage() {
     setForm({
       hotel_id: String(r.hotel_id), date_from: r.date_from || "", date_to: r.date_to || "",
       sharing_price: String(r.sharing_price || 0), double_price: String(r.double_price || 0),
-      triple_price: String(r.triple_price || 0), quad_price: String(r.quad_price || 0), quint_price: String(r.quint_price || 0),
+      triple_price: String(r.triple_price || 0), quad_price: String(r.quad_price || 0),
     });
     setEditing(r);
     setShowForm(true);
@@ -120,7 +118,6 @@ export default function AdminHotelRatesPage() {
             <input type="number" placeholder="Double Price" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Triple Price" value={form.triple_price} onChange={(e) => setForm({ ...form, triple_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Quad Price" value={form.quad_price} onChange={(e) => setForm({ ...form, quad_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Quint Price" value={form.quint_price} onChange={(e) => setForm({ ...form, quint_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <div className="md:col-span-3 flex justify-end gap-2">
               <button type="button" onClick={resetForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">{editing ? "Update" : "Create"}</button>

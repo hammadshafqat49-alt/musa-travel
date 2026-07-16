@@ -11,11 +11,18 @@ interface Ticket {
   to_city: string;
   departure_date: string;
   departure_time: string;
+  arrival_date: string | null;
+  arrival_time: string | null;
   return_date: string | null;
   return_time: string | null;
+  return_arrival_date: string | null;
+  return_arrival_time: string | null;
   class: string;
   ticket_type: string;
   price: number;
+  adult_price: number;
+  child_price: number;
+  infant_price: number;
   seats: number;
   available_seats: number;
   status: string;
@@ -29,11 +36,18 @@ const emptyForm = {
   to_city: "",
   departure_date: "",
   departure_time: "",
+  arrival_date: "",
+  arrival_time: "",
   return_date: "",
   return_time: "",
+  return_arrival_date: "",
+  return_arrival_time: "",
   class: "economy",
   ticket_type: "oneway",
   price: "",
+  adult_price: "",
+  child_price: "",
+  infant_price: "",
   seats: "",
   available_seats: "",
   status: "active",
@@ -68,7 +82,10 @@ export default function AdminTicketsPage() {
     e.preventDefault();
     const payload = {
       ...form,
-      price: Number(form.price),
+      price: Number(form.adult_price || 0),
+      adult_price: Number(form.adult_price || 0),
+      child_price: Number(form.child_price || 0),
+      infant_price: Number(form.infant_price || 0),
       seats: Number(form.seats || 0),
       available_seats: Number(form.available_seats || form.seats || 0),
     };
@@ -97,11 +114,18 @@ export default function AdminTicketsPage() {
       to_city: t.to_city,
       departure_date: t.departure_date,
       departure_time: t.departure_time || "",
+      arrival_date: t.arrival_date || "",
+      arrival_time: t.arrival_time || "",
       return_date: t.return_date || "",
       return_time: t.return_time || "",
+      return_arrival_date: t.return_arrival_date || "",
+      return_arrival_time: t.return_arrival_time || "",
       class: t.class || "economy",
       ticket_type: t.ticket_type || "oneway",
       price: String(t.price),
+      adult_price: String(t.adult_price || ""),
+      child_price: String(t.child_price || ""),
+      infant_price: String(t.infant_price || ""),
       seats: String(t.seats || ""),
       available_seats: String(t.available_seats ?? ""),
       status: t.status || "active",
@@ -142,31 +166,117 @@ export default function AdminTicketsPage() {
             </button>
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input required placeholder="Airline" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required placeholder="Flight No." value={form.flight_no} onChange={(e) => setForm({ ...form, flight_no: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required placeholder="From City" value={form.from_city} onChange={(e) => setForm({ ...form, from_city: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required placeholder="To City" value={form.to_city} onChange={(e) => setForm({ ...form, to_city: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="time" placeholder="Departure Time" value={form.departure_time} onChange={(e) => setForm({ ...form, departure_time: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="date" placeholder="Return Date (round-trip)" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="time" placeholder="Return Time" value={form.return_time} onChange={(e) => setForm({ ...form, return_time: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <select value={form.class} onChange={(e) => setForm({ ...form, class: e.target.value })} className="px-3 py-2 border rounded-md text-sm">
-              <option value="economy">Economy</option>
-              <option value="business">Business</option>
-              <option value="first">First</option>
-            </select>
-            <select value={form.ticket_type} onChange={(e) => setForm({ ...form, ticket_type: e.target.value })} className="px-3 py-2 border rounded-md text-sm">
-              <option value="oneway">One Way</option>
-              <option value="round">Round Trip</option>
-            </select>
-            <input required type="number" placeholder="Price (PKR)" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Total Seats" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Available Seats" value={form.available_seats} onChange={(e) => setForm({ ...form, available_seats: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="px-3 py-2 border rounded-md text-sm">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <input placeholder="Notes (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="px-3 py-2 border rounded-md text-sm md:col-span-2" />
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Ticket Type</label>
+              <select value={form.ticket_type} onChange={(e) => setForm({ ...form, ticket_type: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                <option value="oneway">One Way</option>
+                <option value="round">Round Trip</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Airline *</label>
+              <input required placeholder="e.g. Saudi Airlines" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Flight No. *</label>
+              <input required placeholder="e.g. SV-701" value={form.flight_no} onChange={(e) => setForm({ ...form, flight_no: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">From City *</label>
+              <input required placeholder="e.g. Karachi" value={form.from_city} onChange={(e) => setForm({ ...form, from_city: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">To City *</label>
+              <input required placeholder="e.g. Jeddah" value={form.to_city} onChange={(e) => setForm({ ...form, to_city: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Class</label>
+              <select value={form.class} onChange={(e) => setForm({ ...form, class: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                <option value="economy">Economy</option>
+                <option value="business">Business</option>
+                <option value="first">First</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-3 border-t pt-4">
+              <h3 className="text-sm font-bold text-[#0c1d4a] mb-3">Flight Schedule</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Departure Date *</label>
+                  <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Departure Time</label>
+                  <input type="time" value={form.departure_time} onChange={(e) => setForm({ ...form, departure_time: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Arrival Date</label>
+                  <input type="date" value={form.arrival_date} onChange={(e) => setForm({ ...form, arrival_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Arrival Time</label>
+                  <input type="time" value={form.arrival_time} onChange={(e) => setForm({ ...form, arrival_time: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+              </div>
+            </div>
+
+            {form.ticket_type === "round" && (
+              <div className="md:col-span-3 border-t pt-4">
+                <h3 className="text-sm font-bold text-[#0c1d4a] mb-3">Return Flight Schedule</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Date</label>
+                    <input type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Time</label>
+                    <input type="time" value={form.return_time} onChange={(e) => setForm({ ...form, return_time: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Arrival Date</label>
+                    <input type="date" value={form.return_arrival_date} onChange={(e) => setForm({ ...form, return_arrival_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Arrival Time</label>
+                    <input type="time" value={form.return_arrival_time} onChange={(e) => setForm({ ...form, return_arrival_time: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="md:col-span-3 border-t pt-4">
+              <h3 className="text-sm font-bold text-[#0c1d4a] mb-3">Passenger Pricing</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Adult Price (PKR)</label>
+                  <input type="number" placeholder="e.g. 85000" value={form.adult_price} onChange={(e) => setForm({ ...form, adult_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Child Price (PKR)</label>
+                  <input type="number" placeholder="e.g. 65000" value={form.child_price} onChange={(e) => setForm({ ...form, child_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Infant Price (PKR)</label>
+                  <input type="number" placeholder="e.g. 15000" value={form.infant_price} onChange={(e) => setForm({ ...form, infant_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Total Seats</label>
+              <input type="number" placeholder="e.g. 100" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Available Seats</label>
+              <input type="number" placeholder="e.g. 80" value={form.available_seats} onChange={(e) => setForm({ ...form, available_seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Status</label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
             <div className="md:col-span-3 flex justify-end gap-2">
               <button type="button" onClick={resetForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">
@@ -182,17 +292,18 @@ export default function AdminTicketsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Airline</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Flight</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Route</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Departure</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Class</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Price</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Seats (Avail.)</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Airline</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Flight</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Route</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Departure</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Arrival</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Type</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Class</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Pricing</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Seats (Avail.)</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -205,9 +316,15 @@ export default function AdminTicketsPage() {
                   <td className="px-4 py-3">{t.flight_no}</td>
                   <td className="px-4 py-3">{t.from_city} &rarr; {t.to_city}</td>
                   <td className="px-4 py-3">{t.departure_date}{t.departure_time ? ` ${t.departure_time}` : ""}</td>
+                  <td className="px-4 py-3">{t.arrival_date ? `${t.arrival_date}${t.arrival_time ? ` ${t.arrival_time}` : ""}` : "-"}</td>
                   <td className="px-4 py-3 capitalize">{t.ticket_type}</td>
                   <td className="px-4 py-3 capitalize">{t.class}</td>
-                  <td className="px-4 py-3">PKR {Number(t.price).toLocaleString()}</td>
+                  <td className="px-4 py-3">
+                    <div className="text-xs space-y-0.5">
+                      <div className="text-gray-700">A: {t.adult_price ? `PKR ${Number(t.adult_price).toLocaleString()}` : "-"} · C: {t.child_price ? `PKR ${Number(t.child_price).toLocaleString()}` : "-"} · I: {t.infant_price ? `PKR ${Number(t.infant_price).toLocaleString()}` : "-"}</div>
+                      <div className="text-gray-500">Base: PKR {Number(t.price).toLocaleString()}</div>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{t.seats} ({t.available_seats})</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${t.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
@@ -223,7 +340,7 @@ export default function AdminTicketsPage() {
                 </tr>
               ))}
               {tickets.length === 0 && (
-                <tr><td colSpan={11} className="px-4 py-8 text-center text-gray-500">No tickets found. Click "Add Ticket" to create one.</td></tr>
+                <tr><td colSpan={12} className="px-4 py-8 text-center text-gray-500">No tickets found. Click "Add Ticket" to create one.</td></tr>
               )}
             </tbody>
           </table>

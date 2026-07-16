@@ -51,13 +51,12 @@ export async function POST(request: Request) {
       }
       totalAmount = (group?.price || 0) * adults;
     } else if (package_id) {
-      const pkg = await db.prepare("SELECT price, sharing_price, double_price, triple_price, quad_price, quint_price FROM umrah_packages WHERE id = ?").get(package_id) as any;
+      const pkg = await db.prepare("SELECT price, sharing_price, double_price, triple_price, quad_price FROM umrah_packages WHERE id = ?").get(package_id) as any;
       let unitPrice = pkg?.price || 0;
       if (roomType === "sharing") unitPrice = pkg?.sharing_price || pkg?.price || 0;
       else if (roomType === "double") unitPrice = pkg?.double_price || pkg?.price || 0;
       else if (roomType === "triple") unitPrice = pkg?.triple_price || pkg?.price || 0;
       else if (roomType === "quad") unitPrice = pkg?.quad_price || pkg?.price || 0;
-      else if (roomType === "quint") unitPrice = pkg?.quint_price || pkg?.price || 0;
       totalAmount = unitPrice * adults;
     }
 

@@ -38,7 +38,6 @@ interface Package {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 interface Booking {
@@ -58,7 +57,6 @@ const roomLabels: Record<string, string> = {
   double: "Double",
   triple: "Triple",
   quad: "Quad",
-  quint: "Quint",
 };
 
 const fallbackImages: Record<string, string> = {
@@ -84,8 +82,7 @@ export default function PackageBookingClient({
     [packages]
   );
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
-  const [minDays, setMinDays] = useState("");
-  const [maxDays, setMaxDays] = useState("");
+  const [selectedDays, setSelectedDays] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
@@ -102,13 +99,12 @@ export default function PackageBookingClient({
     return packages.filter((p) => {
       if (selectedAirlines.length > 0 && !selectedAirlines.includes(p.airline))
         return false;
-      if (minDays && (p.days || 0) < Number(minDays)) return false;
-      if (maxDays && (p.days || 0) > Number(maxDays)) return false;
+      if (selectedDays && String(p.days || 0) !== selectedDays) return false;
       if (minPrice && p.price < Number(minPrice)) return false;
       if (maxPrice && p.price > Number(maxPrice)) return false;
       return true;
     });
-  }, [packages, selectedAirlines, minDays, maxDays, minPrice, maxPrice]);
+  }, [packages, selectedAirlines, selectedDays, minPrice, maxPrice]);
 
   const toggleAirline = (airline: string) => {
     setSelectedAirlines((prev) =>
@@ -138,7 +134,6 @@ export default function PackageBookingClient({
     if (rt === "double") return pkg.double_price || pkg.price;
     if (rt === "triple") return pkg.triple_price || pkg.price;
     if (rt === "quad") return pkg.quad_price || pkg.price;
-    if (rt === "quint") return pkg.quint_price || pkg.price;
     return pkg.price;
   };
 
@@ -187,14 +182,13 @@ export default function PackageBookingClient({
 
   const clearFilters = () => {
     setSelectedAirlines([]);
-    setMinDays("");
-    setMaxDays("");
+    setSelectedDays("");
     setMinPrice("");
     setMaxPrice("");
   };
 
   const hasActiveFilters =
-    selectedAirlines.length > 0 || minDays || maxDays || minPrice || maxPrice;
+    selectedAirlines.length > 0 || selectedDays || minPrice || maxPrice;
 
   return (
     <div className="space-y-6">
@@ -241,27 +235,24 @@ export default function PackageBookingClient({
               </div>
             </div>
 
-            {/* Duration Filter */}
+            {/* Days Filter */}
             <div className="mb-4">
               <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                Duration (Days)
+                Days
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={minDays}
-                  onChange={(e) => setMinDays(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={maxDays}
-                  onChange={(e) => setMaxDays(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-              </div>
+              <select
+                value={selectedDays}
+                onChange={(e) => setSelectedDays(e.target.value)}
+                className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+              >
+                <option value="">All Days</option>
+                <option value="7">7 Days</option>
+                <option value="10">10 Days</option>
+                <option value="11">11 Days</option>
+                <option value="15">15 Days</option>
+                <option value="20">20 Days</option>
+                <option value="30">30 Days</option>
+              </select>
             </div>
 
             {/* Price Filter */}
@@ -370,13 +361,12 @@ export default function PackageBookingClient({
                         <div className="bg-gray-50 px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wide border-b">
                           Price Per Person (PKR)
                         </div>
-                        <div className="grid grid-cols-5 text-center divide-x">
+                        <div className="grid grid-cols-4 text-center divide-x">
                           {[
                             { key: "sharing", label: "Sharing", val: pkg.sharing_price || pkg.price },
                             { key: "double", label: "Double", val: pkg.double_price || pkg.price },
                             { key: "triple", label: "Triple", val: pkg.triple_price || pkg.price },
                             { key: "quad", label: "Quad", val: pkg.quad_price || pkg.price },
-                            { key: "quint", label: "Quint", val: pkg.quint_price || pkg.price },
                           ].map((r) => (
                             <div key={r.key} className="py-2">
                               <p className="text-[10px] text-gray-500">{r.label}</p>
@@ -522,12 +512,6 @@ export default function PackageBookingClient({
                     Quad &mdash; PKR{" "}
                     {(
                       selectedPkg.quad_price || selectedPkg.price
-                    ).toLocaleString()}
-                  </option>
-                  <option value="quint">
-                    Quint &mdash; PKR{" "}
-                    {(
-                      selectedPkg.quint_price || selectedPkg.price
                     ).toLocaleString()}
                   </option>
                 </select>

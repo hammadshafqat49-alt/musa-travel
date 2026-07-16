@@ -11,9 +11,11 @@ import {
   Ticket,
   FileText,
   Download,
-  MessageSquare,
   Settings,
   ChevronDown,
+  Info,
+  Lock,
+  Shield,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -24,28 +26,22 @@ type MenuItem = ChildItem | ParentItem;
 const menuItems: MenuItem[] = [
   { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/admin/agents", icon: Users, label: "Agents" },
-  {
-    label: "Packages & Groups",
-    icon: Plane,
-    children: [
-      { href: "/admin/packages", icon: Plane, label: "Umrah Packages" },
-      { href: "/admin/umrah-groups", icon: Plane, label: "Umrah Groups" },
-    ],
-  },
-  {
-    label: "Hotels",
-    icon: Hotel,
-    children: [
-      { href: "/admin/hotels", icon: Hotel, label: "Hotels" },
-      { href: "/admin/hotel-rates", icon: Hotel, label: "Hotel Rates" },
-    ],
-  },
+  { href: "/admin/packages", icon: Plane, label: "Umrah Packages" },
+  { href: "/admin/umrah-groups", icon: Plane, label: "Umrah Groups" },
+  { href: "/admin/hotels", icon: Hotel, label: "Hotels" },
   { href: "/admin/bookings", icon: BookOpen, label: "Bookings" },
   { href: "/admin/tickets", icon: Ticket, label: "Tickets" },
-  { href: "/admin/ledger", icon: FileText, label: "Ledger" },
+  { href: "/admin/ledger", icon: FileText, label: "Voucher" },
   { href: "/admin/downloads", icon: Download, label: "Downloads" },
-  { href: "/admin/contacts", icon: MessageSquare, label: "Contacts" },
-  { href: "/admin/settings", icon: Settings, label: "Settings" },
+  {
+    label: "Settings",
+    icon: Settings,
+    children: [
+      { href: "/admin/settings", icon: Info, label: "System Info" },
+      { href: "/admin/settings/password", icon: Lock, label: "Password Change" },
+      { href: "/admin/settings/roles", icon: Shield, label: "Roles" },
+    ],
+  },
 ];
 
 function isParent(item: MenuItem): item is ParentItem {

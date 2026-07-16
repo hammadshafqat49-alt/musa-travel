@@ -21,7 +21,6 @@ interface UmrahPackage {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 export default function AgentPackagesPage() {
@@ -44,7 +43,6 @@ export default function AgentPackagesPage() {
     double_price: "",
     triple_price: "",
     quad_price: "",
-    quint_price: "",
   });
 
   const fetchPackages = async () => {
@@ -74,7 +72,6 @@ export default function AgentPackagesPage() {
       double_price: "",
       triple_price: "",
       quad_price: "",
-      quint_price: "",
     });
     setEditing(null);
     setShowForm(false);
@@ -121,7 +118,6 @@ export default function AgentPackagesPage() {
       double_price: String(pkg.double_price || ""),
       triple_price: String(pkg.triple_price || ""),
       quad_price: String(pkg.quad_price || ""),
-      quint_price: String(pkg.quint_price || ""),
     });
     setEditing(pkg);
     setShowForm(true);
@@ -170,7 +166,6 @@ export default function AgentPackagesPage() {
             <input type="number" placeholder="Double Price" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Triple Price" value={form.triple_price} onChange={(e) => setForm({ ...form, triple_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Quad Price" value={form.quad_price} onChange={(e) => setForm({ ...form, quad_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Quint Price" value={form.quint_price} onChange={(e) => setForm({ ...form, quint_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <div className="md:col-span-3 flex justify-end gap-2">
               <button type="button" onClick={resetForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">{editing ? "Update" : "Create"}</button>

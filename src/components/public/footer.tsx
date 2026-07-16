@@ -8,7 +8,7 @@ export default function PublicFooter() {
         <div>
           <h3 className="text-lg font-bold mb-4">Details About Musa Travel Service</h3>
           <div className="space-y-2 text-sm text-gray-300">
-            <p className="flex items-start gap-2"><MapPin size={16} className="mt-1 shrink-0" /> Gulberg 3, Main Bouleward, Eden Tower LGF 6/8 Lahore</p>
+            <p className="flex items-start gap-2"><MapPin size={16} className="mt-1 shrink-0" /> Gulberg 3, Main Boulevard, Eden Tower LGF 6/8 Lahore</p>
             <p className="flex items-center gap-2"><Phone size={16} /> 24/7 customer support: 0333 4390349 / 03390000007</p>
             <p className="flex items-center gap-2"><Mail size={16} /> musatravelagnecy1@gmail.com</p>
             <p className="flex items-center gap-2"><Globe size={16} /> https://travelwithmusa.com/</p>
@@ -43,12 +43,6 @@ export default function PublicFooter() {
         </div>
       </div>
 
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400">
-          <p>Copyright 2026 travelwithmusa.com All rights reserved.</p>
-          <p>Designed and Developed by JourneyOnline.pk | Contact 0333 4390349 / 03390000007</p>
-        </div>
-      </div>
     </footer>
   );
 }

@@ -23,8 +23,8 @@ export async function POST(request: Request) {
       INSERT INTO umrah_packages (
         title, airline, departure_date, return_date, days, price, visa_price,
         hotel_makkah, hotel_madina, status, image_url,
-        sharing_price, double_price, triple_price, quad_price, quint_price, agent_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        sharing_price, double_price, triple_price, quad_price, agent_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const result = await stmt.run(
       data.title,
@@ -42,7 +42,6 @@ export async function POST(request: Request) {
       Number(data.double_price) || 0,
       Number(data.triple_price) || 0,
       Number(data.quad_price) || 0,
-      Number(data.quint_price) || 0,
       agent.id
     );
 
@@ -72,7 +71,7 @@ export async function PUT(request: Request) {
       UPDATE umrah_packages SET
         title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?,
         price = ?, visa_price = ?, hotel_makkah = ?, hotel_madina = ?,
-        image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?, quint_price = ?
+        image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
       WHERE id = ? AND agent_id = ?
     `);
     await stmt.run(
@@ -90,7 +89,6 @@ export async function PUT(request: Request) {
       Number(fields.double_price) || 0,
       Number(fields.triple_price) || 0,
       Number(fields.quad_price) || 0,
-      Number(fields.quint_price) || 0,
       id,
       agent.id
     );

@@ -98,12 +98,11 @@ export default function LedgerClient({
       e.type.toUpperCase(),
       e.description || "-",
       `PKR ${e.amount.toLocaleString()}`,
-      `PKR ${e.balance.toLocaleString()}`,
     ]);
 
     autoTable(doc, {
       startY: 250,
-      head: [["Date", "Type", "Description", "Amount", "Balance"]],
+      head: [["Date", "Type", "Description", "Amount"]],
       body: tableData,
       theme: "grid",
       headStyles: {
@@ -124,8 +123,7 @@ export default function LedgerClient({
         0: { halign: "center", cellWidth: 70 },
         1: { halign: "center", cellWidth: 60 },
         2: { halign: "left", cellWidth: "auto" },
-        3: { halign: "right", cellWidth: 90 },
-        4: { halign: "right", cellWidth: 90 },
+        3: { halign: "right", cellWidth: 110 },
       },
       styles: {
         lineColor: primaryBlue,
@@ -151,13 +149,13 @@ export default function LedgerClient({
       );
     }
 
-    doc.save(`ledger-${agent.agency_name || "agent"}-${new Date().toISOString().split("T")[0]}.pdf`);
+    doc.save(`voucher-${agent.agency_name || "agent"}-${new Date().toISOString().split("T")[0]}.pdf`);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#0c1d4a]">Ledger</h1>
+        <h1 className="text-2xl font-bold text-[#0c1d4a]">Voucher</h1>
         <button
           onClick={downloadPDF}
           className="flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
@@ -175,14 +173,13 @@ export default function LedgerClient({
                 <th className="text-left py-2 px-3">Type</th>
                 <th className="text-left py-2 px-3">Description</th>
                 <th className="text-right py-2 px-3">Amount</th>
-                <th className="text-right py-2 px-3">Balance</th>
               </tr>
             </thead>
             <tbody>
               {entries.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
-                    No ledger entries found.
+                  <td colSpan={4} className="px-4 py-6 text-center text-gray-500">
+                    No voucher entries found.
                   </td>
                 </tr>
               ) : (
@@ -203,9 +200,6 @@ export default function LedgerClient({
                     <td className="py-2 px-3">{e.description || "-"}</td>
                     <td className="py-2 px-3 text-right font-medium">
                       PKR {e.amount.toLocaleString()}
-                    </td>
-                    <td className="py-2 px-3 text-right font-bold">
-                      PKR {e.balance.toLocaleString()}
                     </td>
                   </tr>
                 ))

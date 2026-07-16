@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, RefreshCw, User, Phone, Mail } from "lucide-react";
+import { Trash2, RefreshCw, User, Phone, Mail, Eye, X } from "lucide-react";
 
 interface Booking {
   id: number;
@@ -28,6 +28,7 @@ const statuses = ["pending", "confirmed", "cancelled", "completed"];
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const fetchBookings = async () => {
     const res = await fetch("/api/admin/bookings");
@@ -74,15 +75,15 @@ export default function AdminBookingsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Client / Agent</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Ref#</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Adults</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Total</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Date</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Client / Agent</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Type</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Ref#</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Adults</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Total</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Date</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -144,12 +145,20 @@ export default function AdminBookingsPage() {
                       {b.created_at ? new Date(b.created_at).toLocaleDateString() : "-"}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleDelete(b.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setSelectedBooking(b)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(b.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -168,6 +177,142 @@ export default function AdminBookingsPage() {
           </table>
         </div>
       </div>
+
+      {/* Booking Detail Modal */}
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-lg font-bold text-[#0c1d4a]">
+                Booking #{selectedBooking.id} Details
+              </h2>
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Status Badge */}
+              <div className="flex items-center gap-3">
+                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                  selectedBooking.status === "confirmed"
+                    ? "bg-green-100 text-green-700"
+                    : selectedBooking.status === "cancelled"
+                    ? "bg-red-100 text-red-700"
+                    : selectedBooking.status === "completed"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}>
+                  {selectedBooking.status}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {selectedBooking.created_at
+                    ? new Date(selectedBooking.created_at).toLocaleString()
+                    : "-"}
+                </span>
+              </div>
+
+              {/* Client / Agent Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Client Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Name</span>
+                      <span className="font-medium">{selectedBooking.client_name || "N/A"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Phone</span>
+                      <span className="font-medium">{selectedBooking.client_phone || "-"}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Email</span>
+                      <span className="font-medium">{selectedBooking.client_email || "-"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Agent Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Agent</span>
+                      <span className="font-medium">
+                        {selectedBooking.agent_name || "Direct Client"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Agent ID</span>
+                      <span className="font-medium">{selectedBooking.agent_id || "-"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Booking Details */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-xs font-bold text-gray-500 uppercase mb-3">Booking Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Type</span>
+                    <span className="font-medium capitalize">{selectedBooking.type}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Reference #</span>
+                    <span className="font-medium">{selectedBooking.reference_id || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Package ID</span>
+                    <span className="font-medium">{selectedBooking.package_id || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Group ID</span>
+                    <span className="font-medium">{selectedBooking.group_id || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Adults</span>
+                    <span className="font-medium">{selectedBooking.adults}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Infants</span>
+                    <span className="font-medium">{selectedBooking.infants || "0"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Room Type</span>
+                    <span className="font-medium capitalize">{selectedBooking.room_type || "-"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Total Amount</span>
+                    <span className="font-bold text-[#dc2626]">
+                      PKR {Number(selectedBooking.total_amount).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {selectedBooking.notes && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase mb-2">Notes</h3>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedBooking.notes}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t flex justify-end gap-2">
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

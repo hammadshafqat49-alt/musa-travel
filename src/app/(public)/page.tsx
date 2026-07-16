@@ -486,7 +486,7 @@ export default async function HomePage() {
                 <div>
                   <h4 className="font-bold text-[#0c1d4a] mb-1">Head Office</h4>
                   <p className="text-sm text-gray-600">
-                    Gulberg 3, Main Bouleward, Eden Tower LGF 6/8 Lahore
+                    Gulberg 3, Main Boulevard, Eden Tower LGF 6/8 Lahore
                   </p>
                 </div>
               </div>

@@ -10,8 +10,10 @@ export async function POST(request: Request) {
       package_id,
       group_id,
       adults = 1,
+      children = 0,
       infants = 0,
       room_type,
+      transport_included = false,
       client_name,
       client_phone,
       client_email,
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
     if (type === "package" && package_id) {
       const pkg = await db
         .prepare(
-          "SELECT price, sharing_price, double_price, triple_price, quad_price, quint_price FROM umrah_packages WHERE id = ?"
+          "SELECT price, sharing_price, double_price, triple_price, quad_price FROM umrah_packages WHERE id = ?"
         )
         .get(package_id) as any;
       if (!pkg) {
@@ -43,7 +45,6 @@ export async function POST(request: Request) {
       else if (room_type === "double") unitPrice = pkg.double_price || pkg.price || 0;
       else if (room_type === "triple") unitPrice = pkg.triple_price || pkg.price || 0;
       else if (room_type === "quad") unitPrice = pkg.quad_price || pkg.price || 0;
-      else if (room_type === "quint") unitPrice = pkg.quint_price || pkg.price || 0;
       totalAmount = unitPrice * Number(adults);
     } else if (type === "umrah" && group_id) {
       const group = await db
@@ -68,9 +69,11 @@ export async function POST(request: Request) {
       package_id,
       group_id,
       adults: Number(adults),
+      children: Number(children),
       infants: Number(infants),
       total_amount: totalAmount,
       room_type,
+      transport_included,
       client_name,
       client_phone,
       client_email,

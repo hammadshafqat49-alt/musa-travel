@@ -62,7 +62,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold">Head Office</h3>
-                <p className="text-sm text-gray-600 mt-1">Gulberg 3, Main Bouleward, Eden Tower LGF 6/8 Lahore</p>
+                <p className="text-sm text-gray-600 mt-1">Gulberg 3, Main Boulevard, Eden Tower LGF 6/8 Lahore</p>
               </div>
             </div>
           </div>

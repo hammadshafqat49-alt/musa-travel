@@ -25,7 +25,6 @@ interface HotelRate {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 const fallbackImages: Record<string, string> = {
@@ -40,7 +39,7 @@ function formatPrice(val: number | null) {
   return `PKR ${val.toLocaleString()}`;
 }
 
-export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
+export default function HotelRateList({ rates, showPriceFilter = true }: { rates: HotelRate[]; showPriceFilter?: boolean }) {
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -62,7 +61,6 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
         r.double_price,
         r.triple_price,
         r.quad_price,
-        r.quint_price,
       ].filter((p) => p && p > 0) as number[];
       const lowest = prices.length > 0 ? Math.min(...prices) : 0;
       if (lowest < min || lowest > max) return false;
@@ -99,7 +97,7 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
           <p className="text-sm text-gray-500">Madina Hotels</p>
         </div>
         <div className="bg-[#dc2626] text-white rounded-xl p-5 text-center">
-          <p className="text-3xl font-bold">5</p>
+          <p className="text-3xl font-bold">4</p>
           <p className="text-sm text-white/80">Room Types</p>
         </div>
       </div>
@@ -155,6 +153,7 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
               </div>
             </div>
 
+            {showPriceFilter && (
             <div>
               <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
                 Lowest Price (PKR)
@@ -176,6 +175,7 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
                 />
               </div>
             </div>
+            )}
           </div>
         </aside>
 
@@ -195,7 +195,6 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
                   { key: "double", label: "Double", val: r.double_price },
                   { key: "triple", label: "Triple", val: r.triple_price },
                   { key: "quad", label: "Quad", val: r.quad_price },
-                  { key: "quint", label: "Quint", val: r.quint_price },
                 ];
                 const lowestPrice = prices
                   .filter((p) => p.val && p.val > 0)
@@ -256,7 +255,7 @@ export default function HotelRateList({ rates }: { rates: HotelRate[] }) {
                         <div className="bg-gray-50 px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wide border-b">
                           Price Per Night (PKR)
                         </div>
-                        <div className="grid grid-cols-5 text-center divide-x">
+                        <div className="grid grid-cols-4 text-center divide-x">
                           {prices.map((p) => (
                             <div key={p.key} className="py-2">
                               <p className="text-[10px] text-gray-500">

@@ -65,10 +65,6 @@ export default function UmrahGroupBookingClient({
     [groups]
   );
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
-  const [minDays, setMinDays] = useState("");
-  const [maxDays, setMaxDays] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
 
   const [selectedGroup, setSelectedGroup] = useState<UmrahGroup | null>(null);
   const [adults, setAdults] = useState(1);
@@ -81,13 +77,9 @@ export default function UmrahGroupBookingClient({
     return groups.filter((g) => {
       if (selectedAirlines.length > 0 && g.airline && !selectedAirlines.includes(g.airline))
         return false;
-      if (minDays && (g.days || 0) < Number(minDays)) return false;
-      if (maxDays && (g.days || 0) > Number(maxDays)) return false;
-      if (minPrice && g.price < Number(minPrice)) return false;
-      if (maxPrice && g.price > Number(maxPrice)) return false;
       return true;
     });
-  }, [groups, selectedAirlines, minDays, maxDays, minPrice, maxPrice]);
+  }, [groups, selectedAirlines]);
 
   const toggleAirline = (airline: string) => {
     setSelectedAirlines((prev) =>
@@ -150,14 +142,10 @@ export default function UmrahGroupBookingClient({
 
   const clearFilters = () => {
     setSelectedAirlines([]);
-    setMinDays("");
-    setMaxDays("");
-    setMinPrice("");
-    setMaxPrice("");
   };
 
   const hasActiveFilters =
-    selectedAirlines.length > 0 || minDays || maxDays || minPrice || maxPrice;
+    selectedAirlines.length > 0;
 
   return (
     <div className="space-y-6">
@@ -204,49 +192,6 @@ export default function UmrahGroupBookingClient({
               </div>
             )}
 
-            <div className="mb-4">
-              <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                Duration (Days)
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={minDays}
-                  onChange={(e) => setMinDays(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={maxDays}
-                  onChange={(e) => setMaxDays(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-                Price (PKR)
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                />
-              </div>
-            </div>
           </div>
         </aside>
 

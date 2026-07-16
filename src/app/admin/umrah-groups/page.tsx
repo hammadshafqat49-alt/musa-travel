@@ -85,18 +85,45 @@ export default function AdminUmrahGroupsPage() {
             <button onClick={resetForm} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input required placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input placeholder="Airline" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="number" placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Days" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Seats" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Available Seats" value={form.available_seats} onChange={(e) => setForm({ ...form, available_seats: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="px-3 py-2 border rounded-md text-sm">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Title *</label>
+              <input required placeholder="e.g. Ramadan Group 2026" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Departure Date *</label>
+              <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Date</label>
+              <input type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Airline</label>
+              <input placeholder="e.g. Saudi Airlines" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Price (PKR) *</label>
+              <input required type="number" placeholder="e.g. 150000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Days</label>
+              <input type="number" placeholder="e.g. 15" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Total Seats</label>
+              <input type="number" placeholder="e.g. 50" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Available Seats</label>
+              <input type="number" placeholder="e.g. 50" value={form.available_seats} onChange={(e) => setForm({ ...form, available_seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Status</label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
             <div className="md:col-span-3 flex justify-end gap-2">
               <button type="button" onClick={resetForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">{editing ? "Update" : "Create"}</button>
@@ -109,16 +136,16 @@ export default function AdminUmrahGroupsPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Title</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Departure</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Return</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Airline</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Price</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Days</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Seats</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Title</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Departure</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Return</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Airline</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Price</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Days</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Seats</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">

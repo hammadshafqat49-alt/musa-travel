@@ -41,7 +41,6 @@ interface Package {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 function PackageCard({ pkg, onBook }: { pkg: Package; onBook: (pkg: Package) => void }) {
@@ -100,7 +99,6 @@ function PackageCard({ pkg, onBook }: { pkg: Package; onBook: (pkg: Package) => 
               { label: "Double", val: pkg.double_price || pkg.price },
               { label: "Triple", val: pkg.triple_price || pkg.price },
               { label: "Quad", val: pkg.quad_price || pkg.price },
-              { label: "Quint", val: pkg.quint_price || pkg.price },
             ].map((r) => (
               <div key={r.label} className="py-2">
                 <p className="text-[10px] text-gray-500">{r.label}</p>
@@ -136,8 +134,10 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
   const [clientPhone, setClientPhone] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [roomType, setRoomType] = useState("sharing");
+  const [transportIncluded, setTransportIncluded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -147,11 +147,10 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
     if (rt === "double") return pkg.double_price || pkg.price;
     if (rt === "triple") return pkg.triple_price || pkg.price;
     if (rt === "quad") return pkg.quad_price || pkg.price;
-    if (rt === "quint") return pkg.quint_price || pkg.price;
     return pkg.price;
   };
 
-  const total = getUnitPrice(roomType) * adults;
+  const total = getUnitPrice(roomType) * (adults + children);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,8 +164,10 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
           type: "package",
           package_id: pkg.id,
           adults,
+          children,
           infants,
           room_type: roomType,
+          transport_included: transportIncluded,
           client_name: clientName,
           client_phone: clientPhone,
           client_email: clientEmail,
@@ -279,13 +280,10 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
                 <option value="quad">
                   Quad — PKR {getUnitPrice("quad").toLocaleString()} / person
                 </option>
-                <option value="quint">
-                  Quint — PKR {getUnitPrice("quint").toLocaleString()} / person
-                </option>
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   <Users size={14} className="inline mr-1" /> Adults
@@ -300,6 +298,16 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Children</label>
+                <input
+                  type="number"
+                  min={0}
+                  value={children}
+                  onChange={(e) => setChildren(Number(e.target.value))}
+                  className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Infants</label>
                 <input
                   type="number"
@@ -309,6 +317,17 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
                   className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="transport"
+                type="checkbox"
+                checked={transportIncluded}
+                onChange={(e) => setTransportIncluded(e.target.checked)}
+                className="w-4 h-4 text-[#dc2626] border-gray-300 rounded focus:ring-[#dc2626]"
+              />
+              <label htmlFor="transport" className="text-sm font-medium text-gray-700">Transport Included</label>
             </div>
 
             <div className="flex items-center justify-between bg-[#dc2626]/10 rounded-md p-3">

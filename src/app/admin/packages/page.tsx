@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Upload } from "lucide-react";
 
 interface Package {
   id: number;
@@ -20,7 +20,6 @@ interface Package {
   double_price: number;
   triple_price: number;
   quad_price: number;
-  quint_price: number;
 }
 
 export default function AdminPackagesPage() {
@@ -35,7 +34,6 @@ export default function AdminPackagesPage() {
     return_date: "",
     days: "",
     price: "",
-    visa_price: "0",
     hotel_makkah: "",
     hotel_madina: "",
     status: "active",
@@ -44,7 +42,6 @@ export default function AdminPackagesPage() {
     double_price: "",
     triple_price: "",
     quad_price: "",
-    quint_price: "",
   });
 
   const fetchPackages = async () => {
@@ -59,14 +56,24 @@ export default function AdminPackagesPage() {
   }, []);
 
   const resetForm = () => {
-    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", visa_price: "0", hotel_makkah: "", hotel_madina: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "", quint_price: "" });
+    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", hotel_makkah: "", hotel_madina: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
     setEditing(null);
     setShowForm(false);
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, image_url: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...form, days: Number(form.days), price: Number(form.price), visa_price: Number(form.visa_price) };
+    const payload = { ...form, days: Number(form.days), price: Number(form.price) };
     if (editing) {
       await fetch("/api/admin/packages", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
     } else {
@@ -84,7 +91,6 @@ export default function AdminPackagesPage() {
       return_date: pkg.return_date,
       days: String(pkg.days || ""),
       price: String(pkg.price),
-      visa_price: String(pkg.visa_price || 0),
       hotel_makkah: pkg.hotel_makkah || "",
       hotel_madina: pkg.hotel_madina || "",
       status: pkg.status || "active",
@@ -93,7 +99,6 @@ export default function AdminPackagesPage() {
       double_price: String(pkg.double_price || ""),
       triple_price: String(pkg.triple_price || ""),
       quad_price: String(pkg.quad_price || ""),
-      quint_price: String(pkg.quint_price || ""),
     });
     setEditing(pkg);
     setShowForm(true);
@@ -123,25 +128,77 @@ export default function AdminPackagesPage() {
             <button onClick={resetForm} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
           </div>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input required placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required placeholder="Airline" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="number" placeholder="Days" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input required type="number" placeholder="Price (base)" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Visa Price" value={form.visa_price} onChange={(e) => setForm({ ...form, visa_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input placeholder="Hotel Makkah" value={form.hotel_makkah} onChange={(e) => setForm({ ...form, hotel_makkah: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input placeholder="Hotel Madina" value={form.hotel_madina} onChange={(e) => setForm({ ...form, hotel_madina: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input placeholder="Image URL (Unsplash)" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Sharing Price" value={form.sharing_price} onChange={(e) => setForm({ ...form, sharing_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Double Price" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Triple Price" value={form.triple_price} onChange={(e) => setForm({ ...form, triple_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Quad Price" value={form.quad_price} onChange={(e) => setForm({ ...form, quad_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Quint Price" value={form.quint_price} onChange={(e) => setForm({ ...form, quint_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="px-3 py-2 border rounded-md text-sm">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Title *</label>
+              <input required placeholder="e.g. Deluxe Umrah Package" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Airline *</label>
+              <input required placeholder="e.g. Saudi Airlines" value={form.airline} onChange={(e) => setForm({ ...form, airline: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Departure Date *</label>
+              <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Date *</label>
+              <input required type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Days *</label>
+              <input required type="number" placeholder="e.g. 15" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Base Price (PKR) *</label>
+              <input required type="number" placeholder="e.g. 150000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Makkah</label>
+              <input placeholder="e.g. Hilton Makkah" value={form.hotel_makkah} onChange={(e) => setForm({ ...form, hotel_makkah: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Madina</label>
+              <input placeholder="e.g. Anwar Al Madina" value={form.hotel_madina} onChange={(e) => setForm({ ...form, hotel_madina: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+
+            <div className="md:col-span-3">
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Package Image</label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 border rounded-md cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
+                  <Upload size={16} />
+                  <span>Choose File</span>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+                {form.image_url && (
+                  <img src={form.image_url} alt="Preview" className="w-16 h-12 object-cover rounded border" />
+                )}
+                <span className="text-xs text-gray-500">{form.image_url ? "Image selected" : "No file chosen"}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Sharing Price (PKR)</label>
+              <input type="number" placeholder="e.g. 140000" value={form.sharing_price} onChange={(e) => setForm({ ...form, sharing_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Double Price (PKR)</label>
+              <input type="number" placeholder="e.g. 180000" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Triple Price (PKR)</label>
+              <input type="number" placeholder="e.g. 170000" value={form.triple_price} onChange={(e) => setForm({ ...form, triple_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Quad Price (PKR)</label>
+              <input type="number" placeholder="e.g. 160000" value={form.quad_price} onChange={(e) => setForm({ ...form, quad_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Status</label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
             <div className="md:col-span-3 flex justify-end gap-2">
               <button type="button" onClick={resetForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">Cancel</button>
               <button type="submit" className="px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">{editing ? "Update" : "Create"}</button>
@@ -155,16 +212,16 @@ export default function AdminPackagesPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">ID</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Image</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Title</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Airline</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Departure</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Return</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Days</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Price</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Actions</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Image</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Title</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Airline</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Departure</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Return</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Days</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Price</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
+                <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
