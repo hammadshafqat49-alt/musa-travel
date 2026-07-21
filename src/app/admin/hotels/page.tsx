@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
@@ -26,7 +27,7 @@ interface Rate {
   quad_price: number;
 }
 
-export default function AdminHotelsPage() {
+function AdminHotelsPage() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [rates, setRates] = useState<Rate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -247,3 +248,4 @@ export default function AdminHotelsPage() {
     </div>
   );
 }
+export default withPermission(AdminHotelsPage, 'hotels');

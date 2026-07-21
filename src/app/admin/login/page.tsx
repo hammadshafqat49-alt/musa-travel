@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
     const res = await fetch("/api/admin/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
@@ -51,13 +51,13 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                placeholder="admin"
+                placeholder="admin@example.com"
                 required
               />
             </div>

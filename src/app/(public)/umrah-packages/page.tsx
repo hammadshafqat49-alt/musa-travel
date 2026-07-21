@@ -12,6 +12,10 @@ import {
   Mail,
   User,
   Users,
+  MapPin,
+  Armchair,
+  MoveHorizontal,
+  CalendarDays,
 } from "lucide-react";
 
 const fallbackImages: Record<string, string> = {
@@ -31,11 +35,16 @@ interface Package {
   airline: string;
   departure_date: string;
   return_date: string;
+  arrival_date: string;
   days: number;
   price: number;
   visa_price: number;
   hotel_makkah: string;
   hotel_madina: string;
+  from_city: string;
+  to_city: string;
+  seats: number;
+  distance_meters: string;
   image_url: string;
   sharing_price: number;
   double_price: number;
@@ -55,16 +64,41 @@ function PackageCard({ pkg, onBook }: { pkg: Package; onBook: (pkg: Package) => 
       </div>
 
       <div className="p-5">
-        <h3 className="text-lg font-bold text-[#0c1d4a] mb-2">{pkg.title}</h3>
+        <h3 className="text-lg font-bold text-[#0c1d4a] mb-3">{pkg.title}</h3>
 
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase">Departure</p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.departure_date}</p>
+            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
+              <CalendarDays size={10} /> Departure
+            </p>
+            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.departure_date || "-"}</p>
           </div>
           <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase">Return</p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.return_date}</p>
+            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
+              <Plane size={10} /> Arrival
+            </p>
+            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.arrival_date || "-"}</p>
+          </div>
+          <div className="bg-gray-50 rounded-md p-2 text-center">
+            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
+              <MoveHorizontal size={10} /> Route
+            </p>
+            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.from_city || "-"} → {pkg.to_city || "-"}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="bg-gray-50 rounded-md p-2 text-center">
+            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
+              <Armchair size={10} /> Seats
+            </p>
+            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.seats || "-"}</p>
+          </div>
+          <div className="bg-gray-50 rounded-md p-2 text-center">
+            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
+              <MapPin size={10} /> Distance
+            </p>
+            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.distance_meters || "-"}</p>
           </div>
           <div className="bg-gray-50 rounded-md p-2 text-center">
             <p className="text-[10px] text-gray-500 uppercase">Days</p>
@@ -93,7 +127,7 @@ function PackageCard({ pkg, onBook }: { pkg: Package; onBook: (pkg: Package) => 
           <div className="bg-gray-50 px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase border-b">
             Price Per Person (PKR)
           </div>
-          <div className="grid grid-cols-5 text-center divide-x">
+          <div className="grid grid-cols-4 text-center divide-x">
             {[
               { label: "Sharing", val: pkg.sharing_price || pkg.price },
               { label: "Double", val: pkg.double_price || pkg.price },
@@ -214,7 +248,7 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
             <div className="bg-gray-50 rounded-lg p-3 text-sm">
               <p className="font-semibold text-[#0c1d4a]">{pkg.title}</p>
               <p className="text-gray-500 text-xs mt-1">
-                {pkg.airline} · {pkg.days} Days · {pkg.departure_date}
+                {pkg.airline} · {pkg.days} Days · {pkg.departure_date} · {pkg.from_city} → {pkg.to_city}
               </p>
             </div>
 

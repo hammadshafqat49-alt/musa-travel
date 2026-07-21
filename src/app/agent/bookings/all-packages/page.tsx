@@ -2,6 +2,8 @@ import { getAgent } from "@/lib/auth";
 import { getBookingsByAgent, getUmrahPackages, getUmrahGroups, getOneWayGroups } from "@/lib/data";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function AllPackageBookingsPage() {
   const agentToken = await getAgent();
   if (!agentToken) redirect("/agent/login");

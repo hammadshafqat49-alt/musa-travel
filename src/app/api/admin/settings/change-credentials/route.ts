@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission, adminErrorResponse } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
-    const admin = await requireAdmin();
+    const admin = await requirePermission('settings');
     const { currentPassword, username, email, newPassword, confirmPassword } = await request.json();
 
     const existing = await db.prepare("SELECT * FROM admins WHERE id = ? AND password = ?").get(Number(admin.id), currentPassword) as any;
@@ -54,6 +54,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to update credentials" }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }

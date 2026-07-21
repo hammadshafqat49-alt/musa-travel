@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useMemo, useState } from "react";
 import { RefreshCw, Download, Plane, Building2, Bus, Calendar, Users, BedDouble, CreditCard, ChevronDown, FileText, MapPin } from "lucide-react";
@@ -66,7 +67,7 @@ interface AgentSummary {
   bookings: BookingDetail[];
 }
 
-export default function AdminLedgerPage() {
+function AdminLedgerPage() {
   const [bookings, setBookings] = useState<BookingDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedAgent, setExpandedAgent] = useState<number | null>(null);
@@ -806,3 +807,4 @@ export default function AdminLedgerPage() {
     </div>
   );
 }
+export default withPermission(AdminLedgerPage, 'ledger');

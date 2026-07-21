@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
@@ -11,7 +12,7 @@ interface Download {
   created_at: string;
 }
 
-export default function AdminDownloadsPage() {
+function AdminDownloadsPage() {
   const [downloads, setDownloads] = useState<Download[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -118,3 +119,4 @@ export default function AdminDownloadsPage() {
     </div>
   );
 }
+export default withPermission(AdminDownloadsPage, 'downloads');

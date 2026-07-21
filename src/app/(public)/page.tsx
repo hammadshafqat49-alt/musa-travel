@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { getUmrahPackages } from "@/lib/data";
+
+export const dynamic = "force-dynamic";
+
 import {
   Plane,
   Shield,

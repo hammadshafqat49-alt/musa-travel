@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
@@ -16,7 +17,7 @@ interface Group {
   status: string;
 }
 
-export default function AdminUmrahGroupsPage() {
+function AdminUmrahGroupsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -176,3 +177,4 @@ export default function AdminUmrahGroupsPage() {
     </div>
   );
 }
+export default withPermission(AdminUmrahGroupsPage, 'umrah_groups');

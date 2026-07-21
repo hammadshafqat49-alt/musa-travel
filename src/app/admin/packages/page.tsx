@@ -1,6 +1,8 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, X, Upload } from "lucide-react";
 
 interface Package {
@@ -14,6 +16,11 @@ interface Package {
   visa_price: number;
   hotel_makkah: string;
   hotel_madina: string;
+  from_city: string;
+  to_city: string;
+  seats: number;
+  distance_meters: string;
+  arrival_date: string;
   status: string;
   image_url: string;
   sharing_price: number;
@@ -22,7 +29,8 @@ interface Package {
   quad_price: number;
 }
 
-export default function AdminPackagesPage() {
+function AdminPackagesPage() {
+  const router = useRouter();
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -34,8 +42,14 @@ export default function AdminPackagesPage() {
     return_date: "",
     days: "",
     price: "",
+    visa_price: "0",
     hotel_makkah: "",
     hotel_madina: "",
+    from_city: "",
+    to_city: "",
+    seats: "",
+    distance_meters: "",
+    arrival_date: "",
     status: "active",
     image_url: "",
     sharing_price: "",
@@ -56,7 +70,7 @@ export default function AdminPackagesPage() {
   }, []);
 
   const resetForm = () => {
-    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", hotel_makkah: "", hotel_madina: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
+    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", visa_price: "0", hotel_makkah: "", hotel_madina: "", from_city: "", to_city: "", seats: "", distance_meters: "", arrival_date: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -73,14 +87,35 @@ export default function AdminPackagesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...form, days: Number(form.days), price: Number(form.price) };
-    if (editing) {
-      await fetch("/api/admin/packages", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: editing.id }) });
-    } else {
-      await fetch("/api/admin/packages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    setLoading(true);
+    try {
+      const payload = {
+        ...form,
+        days: Number(form.days),
+        price: Number(form.price),
+        visa_price: Number(form.visa_price),
+        seats: Number(form.seats),
+        sharing_price: Number(form.sharing_price),
+        double_price: Number(form.double_price),
+        triple_price: Number(form.triple_price),
+        quad_price: Number(form.quad_price),
+      };
+      const res = await fetch("/api/admin/packages", {
+        method: editing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editing ? { ...payload, id: editing.id } : payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to save package");
+        return;
+      }
+      resetForm();
+      fetchPackages();
+      router.refresh();
+    } finally {
+      setLoading(false);
     }
-    resetForm();
-    fetchPackages();
   };
 
   const handleEdit = (pkg: Package) => {
@@ -91,8 +126,14 @@ export default function AdminPackagesPage() {
       return_date: pkg.return_date,
       days: String(pkg.days || ""),
       price: String(pkg.price),
+      visa_price: String(pkg.visa_price ?? 0),
       hotel_makkah: pkg.hotel_makkah || "",
       hotel_madina: pkg.hotel_madina || "",
+      from_city: pkg.from_city || "",
+      to_city: pkg.to_city || "",
+      seats: String(pkg.seats ?? ""),
+      distance_meters: pkg.distance_meters || "",
+      arrival_date: pkg.arrival_date || "",
       status: pkg.status || "active",
       image_url: pkg.image_url || "",
       sharing_price: String(pkg.sharing_price || ""),
@@ -141,8 +182,8 @@ export default function AdminPackagesPage() {
               <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Date *</label>
-              <input required type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Arrival Date</label>
+              <input type="date" value={form.arrival_date} onChange={(e) => setForm({ ...form, arrival_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Days *</label>
@@ -153,12 +194,32 @@ export default function AdminPackagesPage() {
               <input required type="number" placeholder="e.g. 150000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Visa Price (PKR)</label>
+              <input type="number" placeholder="e.g. 15000" value={form.visa_price} onChange={(e) => setForm({ ...form, visa_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Makkah</label>
               <input placeholder="e.g. Hilton Makkah" value={form.hotel_makkah} onChange={(e) => setForm({ ...form, hotel_makkah: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Madina</label>
               <input placeholder="e.g. Anwar Al Madina" value={form.hotel_madina} onChange={(e) => setForm({ ...form, hotel_madina: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">From City/Country</label>
+              <input placeholder="e.g. Lahore" value={form.from_city} onChange={(e) => setForm({ ...form, from_city: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">To City/Country</label>
+              <input placeholder="e.g. Jeddah" value={form.to_city} onChange={(e) => setForm({ ...form, to_city: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Seats</label>
+              <input type="number" placeholder="e.g. 50" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Distance (Meters)</label>
+              <input placeholder="e.g. 100 Meters" value={form.distance_meters} onChange={(e) => setForm({ ...form, distance_meters: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
 
             <div className="md:col-span-3">
@@ -217,7 +278,10 @@ export default function AdminPackagesPage() {
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Title</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Airline</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Departure</th>
-                <th className="text-left px-4 py-3 font-bold text-gray-700">Return</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Arrival</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">From / To</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Seats</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Distance</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Days</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Price</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
@@ -238,7 +302,10 @@ export default function AdminPackagesPage() {
                   <td className="px-4 py-3 font-medium">{pkg.title}</td>
                   <td className="px-4 py-3">{pkg.airline}</td>
                   <td className="px-4 py-3">{pkg.departure_date}</td>
-                  <td className="px-4 py-3">{pkg.return_date}</td>
+                  <td className="px-4 py-3">{pkg.arrival_date || "-"}</td>
+                  <td className="px-4 py-3">{pkg.from_city || "-"} → {pkg.to_city || "-"}</td>
+                  <td className="px-4 py-3">{pkg.seats ?? "-"}</td>
+                  <td className="px-4 py-3">{pkg.distance_meters || "-"}</td>
                   <td className="px-4 py-3">{pkg.days}</td>
                   <td className="px-4 py-3">PKR {Number(pkg.price).toLocaleString()}</td>
                   <td className="px-4 py-3">
@@ -254,7 +321,7 @@ export default function AdminPackagesPage() {
                   </td>
                 </tr>
               ))}
-              {packages.length === 0 && <tr><td colSpan={10} className="px-4 py-8 text-center text-gray-500">No packages found.</td></tr>}
+              {packages.length === 0 && <tr><td colSpan={13} className="px-4 py-8 text-center text-gray-500">No packages found.</td></tr>}
             </tbody>
           </table>
         </div>
@@ -262,3 +329,4 @@ export default function AdminPackagesPage() {
     </div>
   );
 }
+export default withPermission(AdminPackagesPage, 'packages');

@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
@@ -16,7 +17,7 @@ interface Agent {
   created_at: string;
 }
 
-export default function AdminAgentsPage() {
+function AdminAgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -205,3 +206,4 @@ export default function AdminAgentsPage() {
     </div>
   );
 }
+export default withPermission(AdminAgentsPage, 'agents');

@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X, Shield, Users, Save, Check } from "lucide-react";
@@ -32,8 +33,8 @@ interface AdminUser {
   created_at: string;
 }
 
-export default function AdminRolesPage() {
-  const [activeTab, setActiveTab] = useState<"roles" | "users">("roles");
+function AdminRolesPage() {
+  const [activeTab, setActiveTab] = useState<"roles" | "users">("users");
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -172,20 +173,10 @@ export default function AdminRolesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#0c1d4a]">Roles & Users</h1>
+      <h1 className="text-2xl font-bold text-[#0c1d4a]">Users & Roles</h1>
 
       {/* Tabs */}
       <div className="flex border-b">
-        <button
-          onClick={() => setActiveTab("roles")}
-          className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-            activeTab === "roles"
-              ? "border-[#dc2626] text-[#dc2626]"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <Shield size={16} /> Roles
-        </button>
         <button
           onClick={() => setActiveTab("users")}
           className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
@@ -196,135 +187,17 @@ export default function AdminRolesPage() {
         >
           <Users size={16} /> Users
         </button>
+        <button
+          onClick={() => setActiveTab("roles")}
+          className={`px-5 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === "roles"
+              ? "border-[#dc2626] text-[#dc2626]"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Shield size={16} /> Roles
+        </button>
       </div>
-
-      {/* ===== ROLES TAB ===== */}
-      {activeTab === "roles" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-[#0c1d4a]">System Roles</h2>
-            <button
-              onClick={() => { resetRoleForm(); setShowRoleForm(true); }}
-              className="flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              <Plus size={16} /> Add Role
-            </button>
-          </div>
-
-          {showRoleForm && (
-            <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold">{editingRole ? "Edit Role" : "Add Role"}</h3>
-                <button onClick={resetRoleForm} className="text-gray-400 hover:text-gray-600">
-                  <X size={18} />
-                </button>
-              </div>
-              <form onSubmit={handleRoleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Role Name *</label>
-                  <input
-                    required
-                    value={roleName}
-                    onChange={(e) => setRoleName(e.target.value)}
-                    placeholder="e.g. Manager"
-                    className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    {ALL_PERMISSIONS.map((p) => (
-                      <label
-                        key={p.key}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md border cursor-pointer text-sm transition-colors ${
-                          rolePerms.includes(p.key)
-                            ? "bg-[#dc2626]/10 border-[#dc2626] text-[#dc2626]"
-                            : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={rolePerms.includes(p.key)}
-                          onChange={() => togglePerm(p.key)}
-                          className="hidden"
-                        />
-                        {rolePerms.includes(p.key) ? <Check size={14} /> : <div className="w-3.5 h-3.5" />}
-                        {p.label}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <button type="button" onClick={resetRoleForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">
-                    Cancel
-                  </button>
-                  <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">
-                    <Save size={14} /> {editingRole ? "Update" : "Create"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
-                    <th className="text-left px-4 py-3 font-bold text-gray-700">Role Name</th>
-                    <th className="text-left px-4 py-3 font-bold text-gray-700">Permissions</th>
-                    <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {roles.map((r) => {
-                    const perms = getRolePermsArray(r);
-                    return (
-                      <tr key={r.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">{r.id}</td>
-                        <td className="px-4 py-3 font-medium capitalize">{r.name}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-1">
-                            {perms.length === 0 && (
-                              <span className="text-xs text-gray-400">No permissions</span>
-                            )}
-                            {perms.map((p) => {
-                              const label = ALL_PERMISSIONS.find((ap) => ap.key === p)?.label || p;
-                              return (
-                                <span key={p} className="px-2 py-0.5 bg-[#1e3a8a]/10 text-[#1e3a8a] rounded text-[10px] font-medium">
-                                  {label}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button onClick={() => handleEditRole(r)} className="text-blue-500 hover:text-blue-700">
-                              <Pencil size={16} />
-                            </button>
-                            <button onClick={() => handleDeleteRole(r.id)} className="text-red-500 hover:text-red-700">
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {roles.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                        No roles found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ===== USERS TAB ===== */}
       {activeTab === "users" && (
@@ -461,6 +334,135 @@ export default function AdminRolesPage() {
           </div>
         </div>
       )}
+
+      {/* ===== ROLES TAB ===== */}
+      {activeTab === "roles" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#0c1d4a]">System Roles</h2>
+            <button
+              onClick={() => { resetRoleForm(); setShowRoleForm(true); }}
+              className="flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              <Plus size={16} /> Add Role
+            </button>
+          </div>
+
+          {showRoleForm && (
+            <div className="bg-white rounded-lg shadow-sm p-6 border">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold">{editingRole ? "Edit Role" : "Add Role"}</h3>
+                <button onClick={resetRoleForm} className="text-gray-400 hover:text-gray-600">
+                  <X size={18} />
+                </button>
+              </div>
+              <form onSubmit={handleRoleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Role Name *</label>
+                  <input
+                    required
+                    value={roleName}
+                    onChange={(e) => setRoleName(e.target.value)}
+                    placeholder="e.g. Manager"
+                    className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {ALL_PERMISSIONS.map((p) => (
+                      <label
+                        key={p.key}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-md border cursor-pointer text-sm transition-colors ${
+                          rolePerms.includes(p.key)
+                            ? "bg-[#dc2626]/10 border-[#dc2626] text-[#dc2626]"
+                            : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={rolePerms.includes(p.key)}
+                          onChange={() => togglePerm(p.key)}
+                          className="hidden"
+                        />
+                        {rolePerms.includes(p.key) ? <Check size={14} /> : <div className="w-3.5 h-3.5" />}
+                        {p.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <button type="button" onClick={resetRoleForm} className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50">
+                    Cancel
+                  </button>
+                  <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-[#dc2626] text-white rounded-md text-sm hover:bg-[#b91c1c]">
+                    <Save size={14} /> {editingRole ? "Update" : "Create"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                    <th className="text-left px-4 py-3 font-bold text-gray-700">Role Name</th>
+                    <th className="text-left px-4 py-3 font-bold text-gray-700">Permissions</th>
+                    <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {roles.map((r) => {
+                    const perms = getRolePermsArray(r);
+                    return (
+                      <tr key={r.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">{r.id}</td>
+                        <td className="px-4 py-3 font-medium capitalize">{r.name}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-1">
+                            {perms.length === 0 && (
+                              <span className="text-xs text-gray-400">No permissions</span>
+                            )}
+                            {perms.map((p) => {
+                              const label = ALL_PERMISSIONS.find((ap) => ap.key === p)?.label || p;
+                              return (
+                                <span key={p} className="px-2 py-0.5 bg-[#1e3a8a]/10 text-[#1e3a8a] rounded text-[10px] font-medium">
+                                  {label}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button onClick={() => handleEditRole(r)} className="text-blue-500 hover:text-blue-700">
+                              <Pencil size={16} />
+                            </button>
+                            <button onClick={() => handleDeleteRole(r.id)} className="text-red-500 hover:text-red-700">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {roles.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                        No roles found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+export default withPermission(AdminRolesPage, 'settings');

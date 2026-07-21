@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Trash2, RefreshCw, User, Phone, Mail, Eye, X } from "lucide-react";
@@ -25,7 +26,7 @@ interface Booking {
 
 const statuses = ["pending", "confirmed", "cancelled", "completed"];
 
-export default function AdminBookingsPage() {
+function AdminBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -316,3 +317,4 @@ export default function AdminBookingsPage() {
     </div>
   );
 }
+export default withPermission(AdminBookingsPage, 'bookings');

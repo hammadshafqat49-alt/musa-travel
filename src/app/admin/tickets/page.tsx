@@ -1,4 +1,5 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X, Plane } from "lucide-react";
@@ -54,7 +55,7 @@ const emptyForm = {
   notes: "",
 };
 
-export default function AdminTicketsPage() {
+function AdminTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -349,3 +350,4 @@ export default function AdminTicketsPage() {
     </div>
   );
 }
+export default withPermission(AdminTicketsPage, 'tickets');

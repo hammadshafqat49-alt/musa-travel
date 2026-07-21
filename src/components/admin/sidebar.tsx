@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -12,30 +10,27 @@ import {
   FileText,
   Download,
   Settings,
-  ChevronDown,
   Info,
   Lock,
   Shield,
 } from "lucide-react";
-import { useState } from "react";
 
-type ChildItem = { href: string; icon: React.ElementType; label: string };
-type ParentItem = { label: string; icon: React.ElementType; children: ChildItem[] };
-type MenuItem = ChildItem | ParentItem;
+import AppSidebar, { MenuItem } from "@/components/shared/app-sidebar";
 
-const menuItems: MenuItem[] = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/agents", icon: Users, label: "Agents" },
-  { href: "/admin/packages", icon: Plane, label: "Umrah Packages" },
-  { href: "/admin/umrah-groups", icon: Plane, label: "Umrah Groups" },
-  { href: "/admin/hotels", icon: Hotel, label: "Hotels" },
-  { href: "/admin/bookings", icon: BookOpen, label: "Bookings" },
-  { href: "/admin/tickets", icon: Ticket, label: "Tickets" },
-  { href: "/admin/ledger", icon: FileText, label: "Voucher" },
-  { href: "/admin/downloads", icon: Download, label: "Downloads" },
+const allMenuItems: (MenuItem & { permission?: string })[] = [
+  { href: "/admin", icon: LayoutDashboard, label: "Dashboard", permission: "dashboard" },
+  { href: "/admin/agents", icon: Users, label: "Agents", permission: "agents" },
+  { href: "/admin/packages", icon: Plane, label: "Umrah Packages", permission: "packages" },
+  { href: "/admin/umrah-groups", icon: Plane, label: "Umrah Groups", permission: "umrah_groups" },
+  { href: "/admin/hotels", icon: Hotel, label: "Hotels", permission: "hotels" },
+  { href: "/admin/bookings", icon: BookOpen, label: "Bookings", permission: "bookings" },
+  { href: "/admin/tickets", icon: Ticket, label: "Tickets", permission: "tickets" },
+  { href: "/admin/ledger", icon: FileText, label: "Voucher", permission: "ledger" },
+  { href: "/admin/downloads", icon: Download, label: "Downloads", permission: "downloads" },
   {
     label: "Settings",
     icon: Settings,
+    permission: "settings",
     children: [
       { href: "/admin/settings", icon: Info, label: "System Info" },
       { href: "/admin/settings/password", icon: Lock, label: "Password Change" },
@@ -44,82 +39,56 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-function isParent(item: MenuItem): item is ParentItem {
-  return "children" in item;
+function filterMenuItems(
+  items: (MenuItem & { permission?: string })[],
+  permissions: string[]
+): MenuItem[] {
+  return items.reduce<MenuItem[]>((acc, item) => {
+    if (item.permission && !permissions.includes(item.permission)) {
+      return acc;
+    }
+
+    if ("children" in item) {
+      acc.push({
+        label: item.label,
+        icon: item.icon,
+        children: item.children,
+      });
+    } else {
+      acc.push({
+        href: item.href,
+        icon: item.icon,
+        label: item.label,
+      });
+    }
+    return acc;
+  }, []);
 }
 
-export default function AdminSidebar() {
-  const pathname = usePathname();
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-  const toggleMenu = (label: string) => {
-    setOpenMenus((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
+export default function AdminSidebar({
+  permissions,
+  collapsed,
+  mobileOpen,
+  onMobileClose,
+  onCollapseToggle,
+}: {
+  permissions: string[];
+  collapsed: boolean;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+  onCollapseToggle: () => void;
+}) {
+  const menuItems = filterMenuItems(allMenuItems, permissions);
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0c1d4a] text-white flex flex-col z-50">
-      <div className="p-4 border-b border-gray-700">
-        <Link href="/admin" className="flex items-center gap-2">
-          <img src="/logo.jpeg" alt="Musa Travel Service" className="h-10 w-auto rounded bg-white p-0.5 object-contain" />
-          <div>
-            <div className="text-sm font-bold">Musa Travel Service</div>
-            <div className="text-[10px] text-gray-400">MANAGEMENT PANEL</div>
-          </div>
-        </Link>
-      </div>
-
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="space-y-1 px-2">
-          {menuItems.map((item) => {
-            if (isParent(item)) {
-              const isOpen = openMenus[item.label] || item.children.some((c) => pathname.startsWith(c.href));
-              return (
-                <div key={item.label}>
-                  <button
-                    onClick={() => toggleMenu(item.label)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
-                      item.children.some((c) => pathname.startsWith(c.href))
-                        ? "bg-[#dc2626] text-white"
-                        : "text-gray-300 hover:bg-gray-700"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <item.icon size={16} /> {item.label}
-                    </span>
-                    <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                  </button>
-                  {isOpen && (
-                    <div className="ml-4 mt-1 space-y-1">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                            pathname === child.href ? "bg-[#dc2626]/20 text-[#dc2626]" : "text-gray-300 hover:bg-gray-700"
-                          }`}
-                        >
-                          <child.icon size={14} /> {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                  pathname === item.href ? "bg-[#dc2626] text-white" : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                <item.icon size={16} /> {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-    </aside>
+    <AppSidebar
+      menuItems={menuItems}
+      brandLabel="MANAGEMENT PANEL"
+      homeHref="/admin"
+      collapsed={collapsed}
+      mobileOpen={mobileOpen}
+      onMobileClose={onMobileClose}
+      onCollapseToggle={onCollapseToggle}
+    />
   );
 }

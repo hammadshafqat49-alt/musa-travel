@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getAgent } from "@/lib/auth";
 import { getAgentById, getUmrahPackages } from "@/lib/data";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 import { ArrowRight, Calculator, Wallet, Package, Plane, Calendar } from "lucide-react";
 
 export default async function AgentDashboardPage() {

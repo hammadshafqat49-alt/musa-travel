@@ -5,12 +5,12 @@ import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
   try {
-    const { username, password } = await request.json();
+    const { email, password } = await request.json();
 
-    const admin = await db.prepare("SELECT * FROM admins WHERE username = ? AND password = ?").get(username, password) as any;
+    const admin = await db.prepare("SELECT * FROM admins WHERE email = ? AND password = ?").get(email, password) as any;
 
     if (!admin) {
-      return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
     const token = await signAdminToken({ id: admin.id, username: admin.username, email: admin.email, role: admin.role });

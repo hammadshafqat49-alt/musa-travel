@@ -63,12 +63,17 @@ export async function initDb() {
       airline TEXT NOT NULL,
       airline_logo TEXT,
       departure_date TEXT NOT NULL,
-      return_date TEXT NOT NULL,
+      return_date TEXT,
+      arrival_date TEXT,
       days INTEGER,
       price REAL NOT NULL,
       visa_price REAL DEFAULT 0,
       hotel_makkah TEXT,
       hotel_madina TEXT,
+      from_city TEXT,
+      to_city TEXT,
+      seats INTEGER DEFAULT 0,
+      distance_meters TEXT,
       transport_included INTEGER DEFAULT 0,
       type TEXT DEFAULT 'umrah',
       status TEXT DEFAULT 'active',
@@ -263,6 +268,11 @@ export async function initDb() {
   try { await db.prepare("ALTER TABLE tickets ADD COLUMN infant_price REAL DEFAULT 0").run(); } catch {}
   try { await db.prepare("ALTER TABLE tickets ADD COLUMN return_arrival_date TEXT").run(); } catch {}
   try { await db.prepare("ALTER TABLE tickets ADD COLUMN return_arrival_time TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN from_city TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN to_city TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN seats INTEGER DEFAULT 0").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN distance_meters TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN arrival_date TEXT").run(); } catch {}
 }
 
 export async function seedDb() {
@@ -277,15 +287,15 @@ export async function seedDb() {
   const pkgCount = await db.prepare('SELECT COUNT(*) as count FROM umrah_packages').get() as any;
   if (!pkgCount || pkgCount.count === 0) {
     const packages = [
-      ['Umrah by Air - Saudia', 'Saudia', '2026-07-15', '2026-07-25', 10, 145000, 18000, 'Swissotel Makkah', 'Movenpick Madina', 'https://images.unsplash.com/photo-1565058688641-6776481d1b84?w=800&auto=format&fit=crop', 145000, 175000, 155000, 145000],
-      ['Umrah by Air - PIA', 'PIA', '2026-07-20', '2026-07-30', 10, 135000, 18000, 'Hilton Makkah', 'Pullman Zamzam', 'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800&auto=format&fit=crop', 135000, 165000, 145000, 135000],
-      ['Umrah by Air - Airblue', 'Airblue', '2026-08-05', '2026-08-15', 10, 125000, 18000, 'Makkah Clock Royal', 'Movenpick Anwar', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop', 125000, 155000, 135000, 125000],
-      ['Umrah by Air - SereneAir', 'SereneAir', '2026-08-10', '2026-08-20', 10, 120000, 18000, 'Raffles Makkah', 'Dar Al Taqwa', 'https://images.unsplash.com/photo-1527612820672-5b56351f7346?w=800&auto=format&fit=crop', 120000, 150000, 130000, 120000],
-      ['Umrah Package July', 'Saudia', '2026-07-01', '2026-07-12', 11, 155000, 18000, 'Conrad Makkah', 'Shaza Madina', 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800&auto=format&fit=crop', 155000, 185000, 165000, 155000],
-      ['Umrah Package August', 'PIA', '2026-08-01', '2026-08-12', 11, 140000, 18000, 'Hyatt Regency', 'Marriott Madina', 'https://images.unsplash.com/photo-1548685913-fe6678babe8d?w=800&auto=format&fit=crop', 140000, 170000, 150000, 140000],
+      ['Umrah by Air - Saudia', 'Saudia', '2026-07-15', '2026-07-25', '2026-07-15', 10, 145000, 18000, 'Swissotel Makkah', 'Movenpick Madina', 'https://images.unsplash.com/photo-1565058688641-6776481d1b84?w=800&auto=format&fit=crop', 145000, 175000, 155000, 145000, 'Lahore', 'Jeddah', 45, '50 Meters'],
+      ['Umrah by Air - PIA', 'PIA', '2026-07-20', '2026-07-30', '2026-07-20', 10, 135000, 18000, 'Hilton Makkah', 'Pullman Zamzam', 'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800&auto=format&fit=crop', 135000, 165000, 145000, 135000, 'Karachi', 'Jeddah', 40, '100 Meters'],
+      ['Umrah by Air - Airblue', 'Airblue', '2026-08-05', '2026-08-15', '2026-08-05', 10, 125000, 18000, 'Makkah Clock Royal', 'Movenpick Anwar', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop', 125000, 155000, 135000, 125000, 'Islamabad', 'Jeddah', 50, '200 Meters'],
+      ['Umrah by Air - SereneAir', 'SereneAir', '2026-08-10', '2026-08-20', '2026-08-10', 10, 120000, 18000, 'Raffles Makkah', 'Dar Al Taqwa', 'https://images.unsplash.com/photo-1527612820672-5b56351f7346?w=800&auto=format&fit=crop', 120000, 150000, 130000, 120000, 'Lahore', 'Jeddah', 55, '150 Meters'],
+      ['Umrah Package July', 'Saudia', '2026-07-01', '2026-07-12', '2026-07-01', 11, 155000, 18000, 'Conrad Makkah', 'Shaza Madina', 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800&auto=format&fit=crop', 155000, 185000, 165000, 155000, 'Lahore', 'Madina', 30, '300 Meters'],
+      ['Umrah Package August', 'PIA', '2026-08-01', '2026-08-12', '2026-08-01', 11, 140000, 18000, 'Hyatt Regency', 'Marriott Madina', 'https://images.unsplash.com/photo-1548685913-fe6678babe8d?w=800&auto=format&fit=crop', 140000, 170000, 150000, 140000, 'Karachi', 'Madina', 35, '250 Meters'],
     ];
     for (const p of packages) {
-      await db.prepare(`INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, image_url, sharing_price, double_price, triple_price, quad_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(...p);
+      await db.prepare(`INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, image_url, sharing_price, double_price, triple_price, quad_price, from_city, to_city, seats, distance_meters, arrival_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(...p);
     }
   }
 

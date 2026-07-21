@@ -1,27 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
-import AgentSidebar from "@/components/agent/sidebar";
-import AgentHeader from "@/components/agent/header";
+import AdminSidebar from "@/components/admin/sidebar";
+import AdminHeader from "@/components/admin/header";
 import { cn } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
-
-export default function AgentLayout({
+export default function AdminShell({
   children,
+  permissions,
 }: {
   children: React.ReactNode;
+  permissions: string[];
 }) {
-  const pathname = usePathname();
-  const isLoginPage = pathname === "/agent/login";
-
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? window.localStorage.getItem("agent-sidebar-collapsed") : null;
+    const saved = typeof window !== "undefined" ? window.localStorage.getItem("admin-sidebar-collapsed") : null;
     if (saved !== null) {
       setCollapsed(saved === "true");
     }
@@ -29,17 +25,14 @@ export default function AgentLayout({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      window.localStorage.setItem("agent-sidebar-collapsed", String(collapsed));
+      window.localStorage.setItem("admin-sidebar-collapsed", String(collapsed));
     }
   }, [collapsed]);
 
-  if (isLoginPage) {
-    return children;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <AgentSidebar
+      <AdminSidebar
+        permissions={permissions}
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
@@ -51,7 +44,7 @@ export default function AgentLayout({
           collapsed ? "md:ml-16" : "md:ml-64"
         )}
       >
-        <AgentHeader
+        <AdminHeader
           onMenuToggle={() => setMobileOpen(true)}
         />
         <main className="flex-1 p-6">{children}</main>

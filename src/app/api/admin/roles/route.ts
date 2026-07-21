@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission, adminErrorResponse } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export async function GET() {
   try {
-    await requireAdmin();
+    await requirePermission('settings');
     const roles = await db.prepare("SELECT * FROM roles ORDER BY created_at DESC").all();
     return NextResponse.json({ roles });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin();
+    await requirePermission('settings');
     const { name, permissions } = await request.json();
     if (!name || name.trim() === "") {
       return NextResponse.json({ error: "Role name is required" }, { status: 400 });
@@ -23,13 +23,13 @@ export async function POST(request: Request) {
     const result = await db.prepare("INSERT INTO roles (name, permissions) VALUES (?, ?)").run(name.trim(), perms);
     return NextResponse.json({ success: true, id: result.lastInsertRowid });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }
 
 export async function PUT(request: Request) {
   try {
-    await requireAdmin();
+    await requirePermission('settings');
     const { id, name, permissions } = await request.json();
     if (!id || !name || name.trim() === "") {
       return NextResponse.json({ error: "ID and name are required" }, { status: 400 });
@@ -38,13 +38,13 @@ export async function PUT(request: Request) {
     await db.prepare("UPDATE roles SET name = ?, permissions = ? WHERE id = ?").run(name.trim(), perms, id);
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }
 
 export async function DELETE(request: Request) {
   try {
-    await requireAdmin();
+    await requirePermission('settings');
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     if (!id) {
@@ -53,6 +53,6 @@ export async function DELETE(request: Request) {
     await db.prepare("DELETE FROM roles WHERE id = ?").run(Number(id));
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed" }, { status: 500 });
+    return adminErrorResponse(error);
   }
 }

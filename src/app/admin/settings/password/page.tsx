@@ -1,8 +1,9 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useState } from "react";
 
-export default function AdminPasswordPage() {
+function AdminPasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -110,3 +111,4 @@ export default function AdminPasswordPage() {
     </div>
   );
 }
+export default withPermission(AdminPasswordPage, 'settings');

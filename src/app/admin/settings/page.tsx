@@ -1,8 +1,9 @@
 "use client";
+import { withPermission } from "@/lib/with-permission";
 
 import { useState } from "react";
 
-export default function AdminSystemInfoPage() {
+function AdminSystemInfoPage() {
   const [message, setMessage] = useState("");
 
   const handleResetDb = async () => {
@@ -54,3 +55,4 @@ export default function AdminSystemInfoPage() {
     </div>
   );
 }
+export default withPermission(AdminSystemInfoPage, 'settings');

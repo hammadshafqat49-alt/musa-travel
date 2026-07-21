@@ -1,21 +1,33 @@
 import { getDashboardStats } from "@/lib/admin-data";
-import { requireAdmin } from "@/lib/admin-auth";
+import { getAdminWithPermissions } from "@/lib/admin-auth";
 import { Users, Plane, BookOpen, Ticket, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  await requireAdmin();
+  const { permissions } = await getAdminWithPermissions();
+
+  if (!permissions.includes("dashboard")) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
+        <h2 className="text-xl font-bold text-[#0c1d4a] mb-2">Access Denied</h2>
+        <p className="text-gray-500 max-w-md">You do not have permission to view this page.</p>
+      </div>
+    );
+  }
+
   const stats = await getDashboardStats();
 
-  const cards = [
-    { label: "Total Agents", value: stats.agents, icon: Users, color: "bg-blue-500", link: "/admin/agents" },
-    { label: "Umrah Packages", value: stats.packages, icon: Plane, color: "bg-orange-500", link: "/admin/packages" },
-    { label: "Total Bookings", value: stats.bookings, icon: BookOpen, color: "bg-teal-500", link: "/admin/bookings" },
-    { label: "Airline Tickets", value: stats.tickets, icon: Ticket, color: "bg-purple-500", link: "/admin/tickets" },
+  const allCards = [
+    { label: "Total Agents", value: stats.agents, icon: Users, color: "bg-blue-500", link: "/admin/agents", permission: "agents" },
+    { label: "Umrah Packages", value: stats.packages, icon: Plane, color: "bg-orange-500", link: "/admin/packages", permission: "packages" },
+    { label: "Total Bookings", value: stats.bookings, icon: BookOpen, color: "bg-teal-500", link: "/admin/bookings", permission: "bookings" },
+    { label: "Airline Tickets", value: stats.tickets, icon: Ticket, color: "bg-purple-500", link: "/admin/tickets", permission: "tickets" },
     { label: "Contact Messages", value: stats.contacts, icon: MessageSquare, color: "bg-indigo-500", link: "/admin/contacts" },
   ];
+
+  const cards = allCards.filter((card) => !card.permission || permissions.includes(card.permission));
 
   return (
     <div className="max-w-4xl mx-auto">

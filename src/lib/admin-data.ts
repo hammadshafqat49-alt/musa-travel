@@ -68,18 +68,18 @@ export async function getAllUmrahPackages() {
 
 export async function createUmrahPackage(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, visa_price, hotel_makkah, hotel_madina, status, image_url, sharing_price, double_price, triple_price, quad_price)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO umrah_packages (title, airline, departure_date, return_date, arrival_date, days, price, visa_price, hotel_makkah, hotel_madina, from_city, to_city, seats, distance_meters, status, image_url, sharing_price, double_price, triple_price, quad_price)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  return stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price || 0, data.hotel_makkah, data.hotel_madina, data.status || 'active', data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0);
+  return stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.arrival_date || null, data.days, data.price, data.visa_price || 0, data.hotel_makkah, data.hotel_madina, data.from_city || '', data.to_city || '', Number(data.seats) || 0, data.distance_meters || '', data.status || 'active', data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0);
 }
 
 export async function updateUmrahPackage(id: number, data: any) {
   const stmt = db.prepare(`
-    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?, price = ?, visa_price = ?, hotel_makkah = ?, hotel_madina = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
+    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, arrival_date = ?, days = ?, price = ?, visa_price = ?, hotel_makkah = ?, hotel_madina = ?, from_city = ?, to_city = ?, seats = ?, distance_meters = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
     WHERE id = ?
   `);
-  await stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.days, data.price, data.visa_price, data.hotel_makkah, data.hotel_madina, data.status, data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0, id);
+  await stmt.run(data.title, data.airline, data.departure_date, data.return_date, data.arrival_date || null, data.days, data.price, data.visa_price, data.hotel_makkah, data.hotel_madina, data.from_city || '', data.to_city || '', Number(data.seats) || 0, data.distance_meters || '', data.status, data.image_url || '', data.sharing_price || 0, data.double_price || 0, data.triple_price || 0, data.quad_price || 0, id);
 }
 
 export async function deleteUmrahPackage(id: number) {
