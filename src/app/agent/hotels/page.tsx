@@ -1,8 +1,8 @@
-import { getHotelRates } from "@/lib/data";
-import HotelRateList from "@/app/(public)/hotel-rates/hotel-rate-list";
+import { getHotels } from "@/lib/data";
+import HotelList from "@/app/(public)/hotels/hotel-list";
 
 export default async function AgentHotelsPage() {
-  const rates = await getHotelRates() as any[];
+  const hotels = await getHotels();
 
   return (
     <div className="space-y-6">
@@ -13,7 +13,7 @@ export default async function AgentHotelsPage() {
         </p>
       </div>
 
-      <HotelRateList rates={rates} showPriceFilter={false} />
+      <HotelList hotels={hotels as any[]} showPriceFilter={false} />
     </div>
   );
 }

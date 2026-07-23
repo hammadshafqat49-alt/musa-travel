@@ -12,7 +12,7 @@ export default function PublicNavbar() {
     { href: "/about", label: "About Us" },
     { href: "/umrah-packages", label: "Umrah Packages" },
     { href: "/umrah-groups", label: "Umrah Groups" },
-    { href: "/hotel-rates", label: "Hotel Rates" },
+    { href: "/hotels", label: "Hotels" },
     { href: "/contact", label: "Contact Us" },
   ];
 

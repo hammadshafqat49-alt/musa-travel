@@ -6,6 +6,10 @@ export interface Hotel {
   address?: string;
   distance?: string;
   image_url?: string;
+  sharing_price?: number;
+  double_price?: number;
+  triple_price?: number;
+  quad_price?: number;
   created_at?: string;
 }
 
