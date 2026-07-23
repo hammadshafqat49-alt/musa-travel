@@ -2,7 +2,7 @@
 import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Upload } from "lucide-react";
 
 interface Hotel {
   id: number;
@@ -11,43 +11,24 @@ interface Hotel {
   rating: number;
   address: string;
   distance: string;
+  image_url: string;
   created_at: string;
-}
-
-interface Rate {
-  id: number;
-  hotel_id: number;
-  hotel_name: string;
-  city: string;
-  date_from: string;
-  date_to: string;
-  sharing_price: number;
-  double_price: number;
-  triple_price: number;
-  quad_price: number;
 }
 
 function AdminHotelsPage() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
-  const [rates, setRates] = useState<Rate[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingHotel, setEditingHotel] = useState<Hotel | null>(null);
 
   const [form, setForm] = useState({
-    name: "", city: "", rating: "", address: "", distance: "",
-    sharing_price: "", double_price: "", triple_price: "", quad_price: "",
+    name: "", city: "", rating: "", address: "", distance: "", image_url: "",
   });
 
   const fetchData = async () => {
-    const [hotelsRes, ratesRes] = await Promise.all([
-      fetch("/api/admin/hotels"),
-      fetch("/api/admin/hotel-rates"),
-    ]);
+    const hotelsRes = await fetch("/api/admin/hotels");
     const hotelsData = await hotelsRes.json();
-    const ratesData = await ratesRes.json();
     setHotels(hotelsData.hotels || []);
-    setRates(ratesData.rates || []);
     setLoading(false);
   };
 
@@ -56,42 +37,42 @@ function AdminHotelsPage() {
   }, []);
 
   const resetForm = () => {
-    setForm({ name: "", city: "", rating: "", address: "", distance: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
+    setForm({ name: "", city: "", rating: "", address: "", distance: "", image_url: "" });
     setEditingHotel(null);
     setShowForm(false);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, image_url: reader.result as string }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Save hotel
-    const hotelPayload = { name: form.name, city: form.city, rating: Number(form.rating), address: form.address, distance: form.distance };
-    let hotelId = editingHotel?.id;
+    const hotelPayload = {
+      name: form.name,
+      city: form.city,
+      rating: form.rating ? Number(form.rating) : null,
+      address: form.address,
+      distance: form.distance,
+      image_url: form.image_url,
+    };
 
-    if (editingHotel) {
-      await fetch("/api/admin/hotels", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...hotelPayload, id: editingHotel.id }) });
-    } else {
-      const res = await fetch("/api/admin/hotels", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(hotelPayload) });
-      const data = await res.json();
-      hotelId = data.id;
-    }
-
-    // 2. Save rate if any rate field is filled
-    const hasRate = form.sharing_price || form.double_price || form.triple_price || form.quad_price;
-    if (hasRate && hotelId) {
-      const existingRate = rates.find((r) => r.hotel_id === hotelId);
-      const ratePayload = {
-        hotel_id: hotelId,
-        sharing_price: Number(form.sharing_price || 0),
-        double_price: Number(form.double_price || 0),
-        triple_price: Number(form.triple_price || 0),
-        quad_price: Number(form.quad_price || 0),
-      };
-      if (existingRate) {
-        await fetch("/api/admin/hotel-rates", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...ratePayload, id: existingRate.id }) });
-      } else {
-        await fetch("/api/admin/hotel-rates", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(ratePayload) });
-      }
+    const res = await fetch("/api/admin/hotels", {
+      method: editingHotel ? "PUT" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editingHotel ? { ...hotelPayload, id: editingHotel.id } : hotelPayload),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || "Failed to save hotel");
+      return;
     }
 
     resetForm();
@@ -99,29 +80,21 @@ function AdminHotelsPage() {
   };
 
   const handleEdit = (h: Hotel) => {
-    const rate = rates.find((r) => r.hotel_id === h.id);
     setForm({
       name: h.name,
       city: h.city,
       rating: String(h.rating || ""),
       address: h.address || "",
       distance: h.distance || "",
-      sharing_price: String(rate?.sharing_price || ""),
-      double_price: String(rate?.double_price || ""),
-      triple_price: String(rate?.triple_price || ""),
-      quad_price: String(rate?.quad_price || ""),
+      image_url: h.image_url || "",
     });
     setEditingHotel(h);
     setShowForm(true);
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this hotel and its rates?")) return;
+    if (!confirm("Delete this hotel?")) return;
     await fetch(`/api/admin/hotels?id=${id}`, { method: "DELETE" });
-    const rate = rates.find((r) => r.hotel_id === id);
-    if (rate) {
-      await fetch(`/api/admin/hotel-rates?id=${rate.id}`, { method: "DELETE" });
-    }
     fetchData();
   };
 
@@ -164,26 +137,18 @@ function AdminHotelsPage() {
                 <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Distance from Haram</label>
                 <input placeholder="e.g. 200 meters" value={form.distance} onChange={(e) => setForm({ ...form, distance: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
               </div>
-            </div>
-
-            <div className="border-t pt-4 mb-4">
-              <h3 className="text-sm font-bold text-[#0c1d4a] mb-3">Room Rates</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Sharing Price (PKR)</label>
-                  <input type="number" placeholder="e.g. 5000" value={form.sharing_price} onChange={(e) => setForm({ ...form, sharing_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Double Price (PKR)</label>
-                  <input type="number" placeholder="e.g. 8000" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Triple Price (PKR)</label>
-                  <input type="number" placeholder="e.g. 7000" value={form.triple_price} onChange={(e) => setForm({ ...form, triple_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Quad Price (PKR)</label>
-                  <input type="number" placeholder="e.g. 6000" value={form.quad_price} onChange={(e) => setForm({ ...form, quad_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              <div className="md:col-span-3">
+                <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Image</label>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 border rounded-md cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
+                    <Upload size={16} />
+                    <span>Choose File</span>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  </label>
+                  {form.image_url && (
+                    <img src={form.image_url} alt="Preview" className="w-16 h-12 object-cover rounded border" />
+                  )}
+                  <span className="text-xs text-gray-500">{form.image_url ? "Image selected" : "No file chosen"}</span>
                 </div>
               </div>
             </div>
@@ -202,35 +167,31 @@ function AdminHotelsPage() {
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">ID</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Image</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Name</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">City</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Rating</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Address</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Distance</th>
-                <th className="text-left px-4 py-3 font-bold text-gray-700">Rates</th>
                 <th className="text-right px-4 py-3 font-bold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {hotels.map((h) => {
-                const rate = rates.find((r) => r.hotel_id === h.id);
-                return (
+              {hotels.map((h) => (
                   <tr key={h.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">{h.id}</td>
+                    <td className="px-4 py-3">
+                      {h.image_url ? (
+                        <img src={h.image_url} alt={h.name} className="w-14 h-10 object-cover rounded" />
+                      ) : (
+                        <div className="w-14 h-10 bg-gray-200 rounded flex items-center justify-center text-[10px] text-gray-400">No img</div>
+                      )}
+                    </td>
                     <td className="px-4 py-3 font-medium">{h.name}</td>
                     <td className="px-4 py-3">{h.city}</td>
                     <td className="px-4 py-3">{h.rating || "-"}</td>
                     <td className="px-4 py-3">{h.address || "-"}</td>
                     <td className="px-4 py-3">{h.distance || "-"}</td>
-                    <td className="px-4 py-3">
-                      {rate ? (
-                        <div className="text-xs text-gray-700">
-                          S: {rate.sharing_price || "-"} · D: {rate.double_price || "-"} · T: {rate.triple_price || "-"} · Q: {rate.quad_price || "-"}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-400">No rates</span>
-                      )}
-                    </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => handleEdit(h)} className="text-blue-500 hover:text-blue-700"><Pencil size={16} /></button>
@@ -238,8 +199,7 @@ function AdminHotelsPage() {
                       </div>
                     </td>
                   </tr>
-                );
-              })}
+                ))}
               {hotels.length === 0 && <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">No hotels found.</td></tr>}
             </tbody>
           </table>

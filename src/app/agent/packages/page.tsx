@@ -1,30 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, X, Package } from "lucide-react";
-import Link from "next/link";
-
-interface UmrahPackage {
-  id: number;
-  title: string;
-  airline: string;
-  departure_date: string;
-  return_date: string;
-  days: number;
-  price: number;
-  visa_price: number;
-  hotel_makkah: string;
-  hotel_madina: string;
-  status: string;
-  image_url: string;
-  sharing_price: number;
-  double_price: number;
-  triple_price: number;
-  quad_price: number;
-}
+import { Plus, X, Package } from "lucide-react";
+import PackageCard from "@/components/shared/package-card";
+import { UmrahPackage, Hotel } from "@/lib/package-types";
 
 export default function AgentPackagesPage() {
   const [packages, setPackages] = useState<UmrahPackage[]>([]);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<UmrahPackage | null>(null);
@@ -35,9 +18,12 @@ export default function AgentPackagesPage() {
     return_date: "",
     days: "",
     price: "",
-    visa_price: "0",
     hotel_makkah: "",
     hotel_madina: "",
+    makkah_hotel_distance: "",
+    madina_hotel_distance: "",
+    makkah_nights: "",
+    madina_nights: "",
     image_url: "",
     sharing_price: "",
     double_price: "",
@@ -52,8 +38,15 @@ export default function AgentPackagesPage() {
     setLoading(false);
   };
 
+  const fetchHotels = async () => {
+    const res = await fetch("/api/public/hotels");
+    const data = await res.json();
+    setHotels(data.hotels || []);
+  };
+
   useEffect(() => {
     fetchPackages();
+    fetchHotels();
   }, []);
 
   const resetForm = () => {
@@ -64,9 +57,12 @@ export default function AgentPackagesPage() {
       return_date: "",
       days: "",
       price: "",
-      visa_price: "0",
       hotel_makkah: "",
       hotel_madina: "",
+      makkah_hotel_distance: "",
+      madina_hotel_distance: "",
+      makkah_nights: "",
+      madina_nights: "",
       image_url: "",
       sharing_price: "",
       double_price: "",
@@ -83,7 +79,8 @@ export default function AgentPackagesPage() {
       ...form,
       days: Number(form.days),
       price: Number(form.price),
-      visa_price: Number(form.visa_price),
+      makkah_nights: Number(form.makkah_nights),
+      madina_nights: Number(form.madina_nights),
     };
     if (editing) {
       await fetch("/api/agent/packages", {
@@ -107,12 +104,15 @@ export default function AgentPackagesPage() {
       title: pkg.title,
       airline: pkg.airline,
       departure_date: pkg.departure_date,
-      return_date: pkg.return_date,
+      return_date: pkg.return_date || "",
       days: String(pkg.days || ""),
       price: String(pkg.price),
-      visa_price: String(pkg.visa_price || 0),
       hotel_makkah: pkg.hotel_makkah || "",
       hotel_madina: pkg.hotel_madina || "",
+      makkah_hotel_distance: pkg.makkah_hotel_distance || "",
+      madina_hotel_distance: pkg.madina_hotel_distance || "",
+      makkah_nights: String(pkg.makkah_nights || ""),
+      madina_nights: String(pkg.madina_nights || ""),
       image_url: pkg.image_url || "",
       sharing_price: String(pkg.sharing_price || ""),
       double_price: String(pkg.double_price || ""),
@@ -158,9 +158,12 @@ export default function AgentPackagesPage() {
             <input required type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input required type="number" placeholder="Days" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input required type="number" placeholder="Price (base)" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
-            <input type="number" placeholder="Visa Price" value={form.visa_price} onChange={(e) => setForm({ ...form, visa_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input placeholder="Hotel Makkah" value={form.hotel_makkah} onChange={(e) => setForm({ ...form, hotel_makkah: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input placeholder="Hotel Madina" value={form.hotel_madina} onChange={(e) => setForm({ ...form, hotel_madina: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input placeholder="Makkah Hotel Distance" value={form.makkah_hotel_distance} onChange={(e) => setForm({ ...form, makkah_hotel_distance: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input placeholder="Madina Hotel Distance" value={form.madina_hotel_distance} onChange={(e) => setForm({ ...form, madina_hotel_distance: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input type="number" placeholder="Makkah Nights" value={form.makkah_nights} onChange={(e) => setForm({ ...form, makkah_nights: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input type="number" placeholder="Madina Nights" value={form.madina_nights} onChange={(e) => setForm({ ...form, madina_nights: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input placeholder="Image URL (Unsplash)" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Sharing Price" value={form.sharing_price} onChange={(e) => setForm({ ...form, sharing_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Double Price" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
@@ -176,34 +179,13 @@ export default function AgentPackagesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packages.map((pkg) => (
-          <div key={pkg.id} className="bg-white rounded-lg shadow-md border overflow-hidden">
-            {pkg.image_url && (
-              <img src={pkg.image_url} alt={pkg.title} className="w-full h-40 object-cover" />
-            )}
-            <div className="bg-[#dc2626] text-white px-4 py-2 flex items-center justify-between">
-              <span className="font-bold">{pkg.airline}</span>
-              <span className="text-sm">{pkg.days} Days</span>
-            </div>
-            <div className="p-4">
-              <h3 className="font-bold text-[#0c1d4a] mb-1">{pkg.title}</h3>
-              <div className="text-xs text-gray-500 space-y-1 mb-3">
-                <p><strong>Departure:</strong> {pkg.departure_date}</p>
-                <p><strong>Return:</strong> {pkg.return_date}</p>
-                <p><strong>Makkah:</strong> {pkg.hotel_makkah || "N/A"}</p>
-                <p><strong>Madina:</strong> {pkg.hotel_madina || "N/A"}</p>
-              </div>
-              <div className="flex items-center justify-between pt-3 border-t">
-                <div>
-                  <p className="text-[10px] text-gray-500">Base Price</p>
-                  <p className="text-lg font-bold text-[#dc2626]">PKR {Number(pkg.price).toLocaleString()}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => handleEdit(pkg)} className="text-blue-500 hover:text-blue-700"><Pencil size={16} /></button>
-                  <button onClick={() => handleDelete(pkg.id)} className="text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <PackageCard
+            key={pkg.id}
+            pkg={pkg}
+            hotels={hotels}
+            onEdit={() => handleEdit(pkg)}
+            onDelete={() => handleDelete(pkg.id)}
+          />
         ))}
       </div>
 

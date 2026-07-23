@@ -2,168 +2,18 @@
 
 import { useState, useEffect } from "react";
 import {
-  Plane,
-  ArrowRight,
   X,
   CheckCircle2,
-  Building2,
-  BedDouble,
   Phone,
   Mail,
   User,
   Users,
-  MapPin,
-  Armchair,
-  MoveHorizontal,
-  CalendarDays,
+  BedDouble,
 } from "lucide-react";
+import PackageCard from "@/components/shared/package-card";
+import { UmrahPackage, Hotel } from "@/lib/package-types";
 
-const fallbackImages: Record<string, string> = {
-  Saudia:
-    "https://images.unsplash.com/photo-1565058688641-6776481d1b84?w=800&auto=format&fit=crop&q=80",
-  PIA:
-    "https://images.unsplash.com/photo-1548685913-fe6678babe8d?w=800&auto=format&fit=crop&q=80",
-  Airblue:
-    "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&auto=format&fit=crop&q=80",
-  SereneAir:
-    "https://images.unsplash.com/photo-1527612820672-5b56351f7346?w=800&auto=format&fit=crop&q=80",
-};
-
-interface Package {
-  id: number;
-  title: string;
-  airline: string;
-  departure_date: string;
-  return_date: string;
-  arrival_date: string;
-  days: number;
-  price: number;
-  visa_price: number;
-  hotel_makkah: string;
-  hotel_madina: string;
-  from_city: string;
-  to_city: string;
-  seats: number;
-  distance_meters: string;
-  image_url: string;
-  sharing_price: number;
-  double_price: number;
-  triple_price: number;
-  quad_price: number;
-}
-
-function PackageCard({ pkg, onBook }: { pkg: Package; onBook: (pkg: Package) => void }) {
-  const img = pkg.image_url || fallbackImages[pkg.airline] || fallbackImages["Saudia"];
-  return (
-    <div className="bg-white rounded-xl shadow-md border overflow-hidden hover:shadow-xl transition-shadow">
-      <div className="relative h-48">
-        <img src={img} alt={pkg.title} className="w-full h-full object-cover" />
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#0c1d4a] px-2.5 py-1 rounded-md text-xs font-bold shadow-sm flex items-center gap-1">
-          <Plane size={12} /> {pkg.airline}
-        </div>
-      </div>
-
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-[#0c1d4a] mb-3">{pkg.title}</h3>
-
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
-              <CalendarDays size={10} /> Departure
-            </p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.departure_date || "-"}</p>
-          </div>
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
-              <Plane size={10} /> Arrival
-            </p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.arrival_date || "-"}</p>
-          </div>
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
-              <MoveHorizontal size={10} /> Route
-            </p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.from_city || "-"} → {pkg.to_city || "-"}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
-              <Armchair size={10} /> Seats
-            </p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.seats || "-"}</p>
-          </div>
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase flex items-center justify-center gap-1">
-              <MapPin size={10} /> Distance
-            </p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.distance_meters || "-"}</p>
-          </div>
-          <div className="bg-gray-50 rounded-md p-2 text-center">
-            <p className="text-[10px] text-gray-500 uppercase">Days</p>
-            <p className="text-xs font-semibold text-[#0c1d4a]">{pkg.days}</p>
-          </div>
-        </div>
-
-        <div className="space-y-1.5 mb-3">
-          <div className="flex items-start gap-2 text-xs text-gray-600">
-            <Building2 size={14} className="text-[#dc2626] mt-0.5 shrink-0" />
-            <span>
-              <span className="font-medium text-gray-800">Makkah:</span>{" "}
-              {pkg.hotel_makkah || "N/A"}
-            </span>
-          </div>
-          <div className="flex items-start gap-2 text-xs text-gray-600">
-            <Building2 size={14} className="text-[#0D9488] mt-0.5 shrink-0" />
-            <span>
-              <span className="font-medium text-gray-800">Madina:</span>{" "}
-              {pkg.hotel_madina || "N/A"}
-            </span>
-          </div>
-        </div>
-
-        <div className="border rounded-md overflow-hidden mb-3">
-          <div className="bg-gray-50 px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase border-b">
-            Price Per Person (PKR)
-          </div>
-          <div className="grid grid-cols-4 text-center divide-x">
-            {[
-              { label: "Sharing", val: pkg.sharing_price || pkg.price },
-              { label: "Double", val: pkg.double_price || pkg.price },
-              { label: "Triple", val: pkg.triple_price || pkg.price },
-              { label: "Quad", val: pkg.quad_price || pkg.price },
-            ].map((r) => (
-              <div key={r.label} className="py-2">
-                <p className="text-[10px] text-gray-500">{r.label}</p>
-                <p className="text-xs font-bold text-[#0c1d4a]">
-                  {r.val > 0 ? r.val.toLocaleString() : "-"}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div>
-            <p className="text-[10px] text-gray-500">Starting from</p>
-            <p className="text-lg font-bold text-[#dc2626]">
-              PKR {pkg.price.toLocaleString()}
-            </p>
-          </div>
-          <button
-            onClick={() => onBook(pkg)}
-            className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-5 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
-          >
-            Book Now <ArrowRight size={14} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
+function BookingModal({ pkg, onClose }: { pkg: UmrahPackage; onClose: () => void }) {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [clientEmail, setClientEmail] = useState("");
@@ -395,21 +245,27 @@ function BookingModal({ pkg, onClose }: { pkg: Package; onClose: () => void }) {
 }
 
 export default function UmrahPackagesPage() {
-  const [packages, setPackages] = useState<Package[]>([]);
+  const [packages, setPackages] = useState<UmrahPackage[]>([]);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
+  const [selectedPkg, setSelectedPkg] = useState<UmrahPackage | null>(null);
 
   useEffect(() => {
-    async function fetchPackages() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/public/packages");
-        const data = await res.json();
-        setPackages(data.packages || []);
+        const [packagesRes, hotelsRes] = await Promise.all([
+          fetch("/api/public/packages"),
+          fetch("/api/public/hotels"),
+        ]);
+        const packagesData = await packagesRes.json();
+        const hotelsData = await hotelsRes.json();
+        setPackages(packagesData.packages || []);
+        setHotels(hotelsData.hotels || []);
       } finally {
         setLoading(false);
       }
     }
-    fetchPackages();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -435,7 +291,7 @@ export default function UmrahPackagesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packages.map((pkg) => (
-          <PackageCard key={pkg.id} pkg={pkg} onBook={setSelectedPkg} />
+          <PackageCard key={pkg.id} pkg={pkg} hotels={hotels} onBook={() => setSelectedPkg(pkg)} />
         ))}
       </div>
 

@@ -26,7 +26,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {["Faisalabad", "Lahore", "Karachi", "Islamabad", "Peshawar", "Multan", "Rawalpindi", "Sialkot"].map((city) => (
             <div key={city} className="bg-white/10 rounded-md p-4">
-              <MapPin className="mx-auto mb-2 text-[#dc2626]" size={20} />
+              <MapPin className="mx-auto mb-2 text-[#2563eb]" size={20} />
               <p className="font-medium">{city}</p>
             </div>
           ))}
@@ -38,7 +38,7 @@ export default function AboutPage() {
 
         <div className="flex flex-col items-center gap-10">
           <div className="text-center">
-            <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-[#dc2626] shadow-lg mb-4">
+            <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-[#1e3a8a] shadow-lg mb-4">
               <img src="/CEO.jpeg" alt="CEO" className="w-full h-full object-cover" />
             </div>
             <h3 className="text-xl font-bold text-[#0c1d4a]">Nasir Nawaz</h3>

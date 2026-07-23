@@ -1,16 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Calendar,
   Plane,
-  Hotel,
-  Users,
-  ArrowRight,
   X,
   Filter,
-  Building2,
   BedDouble,
   CheckCircle2,
 } from "lucide-react";
@@ -21,24 +16,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-
-interface Package {
-  id: number;
-  title: string;
-  airline: string;
-  departure_date: string;
-  return_date: string;
-  days: number;
-  price: number;
-  visa_price: number;
-  hotel_makkah: string;
-  hotel_madina: string;
-  image_url: string;
-  sharing_price: number;
-  double_price: number;
-  triple_price: number;
-  quad_price: number;
-}
+import PackageCard from "@/components/shared/package-card";
+import { UmrahPackage, Hotel } from "@/lib/package-types";
 
 interface Booking {
   id: number;
@@ -59,26 +38,38 @@ const roomLabels: Record<string, string> = {
   quad: "Quad",
 };
 
-const fallbackImages: Record<string, string> = {
-  Saudia: "https://images.unsplash.com/photo-1565058688641-6776481d1b84?w=800&auto=format&fit=crop",
-  PIA: "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800&auto=format&fit=crop",
-  Airblue: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&auto=format&fit=crop",
-  SereneAir: "https://images.unsplash.com/photo-1527612820672-5b56351f7346?w=800&auto=format&fit=crop",
-};
-
 export default function PackageBookingClient({
   packages,
   bookings: initialBookings,
 }: {
-  packages: Package[];
+  packages: UmrahPackage[];
   bookings: Booking[];
 }) {
   const router = useRouter();
   const [bookings, setBookings] = useState(initialBookings);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+
+  useEffect(() => {
+    async function fetchHotels() {
+      try {
+        const res = await fetch("/api/public/hotels");
+        const data = await res.json();
+        setHotels(data.hotels || []);
+      } catch {}
+    }
+    fetchHotels();
+  }, []);
 
   // Filters
   const allAirlines = useMemo(
-    () => Array.from(new Set(packages.map((p) => p.airline))),
+    () =>
+      Array.from(
+        new Set(
+          packages
+            .map((p) => p.airline?.trim())
+            .filter((a): a is string => Boolean(a) && a.length > 0)
+        )
+      ).sort(),
     [packages]
   );
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
@@ -87,7 +78,7 @@ export default function PackageBookingClient({
   const [maxPrice, setMaxPrice] = useState("");
 
   // Modal
-  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
+  const [selectedPkg, setSelectedPkg] = useState<UmrahPackage | null>(null);
   const [roomType, setRoomType] = useState("sharing");
   const [adults, setAdults] = useState(1);
   const [infants, setInfants] = useState(0);
@@ -114,7 +105,7 @@ export default function PackageBookingClient({
     );
   };
 
-  const openBookModal = (pkg: Package) => {
+  const openBookModal = (pkg: UmrahPackage) => {
     setSelectedPkg(pkg);
     setRoomType("sharing");
     setAdults(1);
@@ -129,7 +120,7 @@ export default function PackageBookingClient({
     setBookingSuccess(false);
   };
 
-  const getUnitPrice = (pkg: Package, rt: string) => {
+  const getUnitPrice = (pkg: UmrahPackage, rt: string) => {
     if (rt === "sharing") return pkg.sharing_price || pkg.price;
     if (rt === "double") return pkg.double_price || pkg.price;
     if (rt === "triple") return pkg.triple_price || pkg.price;
@@ -246,12 +237,9 @@ export default function PackageBookingClient({
                 className="w-full px-2 py-1.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#dc2626]"
               >
                 <option value="">All Days</option>
-                <option value="7">7 Days</option>
-                <option value="10">10 Days</option>
-                <option value="11">11 Days</option>
                 <option value="15">15 Days</option>
-                <option value="20">20 Days</option>
-                <option value="30">30 Days</option>
+                <option value="21">21 Days</option>
+                <option value="28">28 Days</option>
               </select>
             </div>
 
@@ -288,114 +276,14 @@ export default function PackageBookingClient({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filteredPackages.map((pkg) => {
-                const img =
-                  pkg.image_url || fallbackImages[pkg.airline] || fallbackImages["Saudia"];
-                return (
-                  <div
-                    key={pkg.id}
-                    className="bg-white rounded-lg shadow-md border overflow-hidden flex flex-col"
-                  >
-                    <div className="relative h-44 shrink-0">
-                      <img
-                        src={img}
-                        alt={pkg.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#0c1d4a] px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm flex items-center gap-1">
-                        <Plane size={12} /> {pkg.airline}
-                      </div>
-                    </div>
-
-                    <div className="p-4 flex-1 flex flex-col">
-                      <h3 className="text-base font-bold text-[#0c1d4a] mb-2">
-                        {pkg.title}
-                      </h3>
-
-                      <div className="grid grid-cols-3 gap-2 mb-3">
-                        <div className="bg-gray-50 rounded-md p-2 text-center">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wide">
-                            Departure
-                          </p>
-                          <p className="text-xs font-semibold text-[#0c1d4a]">
-                            {pkg.departure_date}
-                          </p>
-                        </div>
-                        <div className="bg-gray-50 rounded-md p-2 text-center">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wide">
-                            Return
-                          </p>
-                          <p className="text-xs font-semibold text-[#0c1d4a]">
-                            {pkg.return_date}
-                          </p>
-                        </div>
-                        <div className="bg-gray-50 rounded-md p-2 text-center">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wide">
-                            Days
-                          </p>
-                          <p className="text-xs font-semibold text-[#0c1d4a]">
-                            {pkg.days}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-1.5 mb-3">
-                        <div className="flex items-start gap-2 text-xs text-gray-600">
-                          <Building2 size={14} className="text-[#dc2626] mt-0.5 shrink-0" />
-                          <span>
-                            <span className="font-medium text-gray-800">Makkah:</span>{" "}
-                            {pkg.hotel_makkah || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2 text-xs text-gray-600">
-                          <Building2 size={14} className="text-[#0D9488] mt-0.5 shrink-0" />
-                          <span>
-                            <span className="font-medium text-gray-800">Madina:</span>{" "}
-                            {pkg.hotel_madina || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Room Pricing Table */}
-                      <div className="border rounded-md overflow-hidden mb-3">
-                        <div className="bg-gray-50 px-3 py-1.5 text-[10px] font-semibold text-gray-500 uppercase tracking-wide border-b">
-                          Price Per Person (PKR)
-                        </div>
-                        <div className="grid grid-cols-4 text-center divide-x">
-                          {[
-                            { key: "sharing", label: "Sharing", val: pkg.sharing_price || pkg.price },
-                            { key: "double", label: "Double", val: pkg.double_price || pkg.price },
-                            { key: "triple", label: "Triple", val: pkg.triple_price || pkg.price },
-                            { key: "quad", label: "Quad", val: pkg.quad_price || pkg.price },
-                          ].map((r) => (
-                            <div key={r.key} className="py-2">
-                              <p className="text-[10px] text-gray-500">{r.label}</p>
-                              <p className="text-xs font-bold text-[#0c1d4a]">
-                                {r.val > 0 ? r.val.toLocaleString() : "-"}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="mt-auto flex items-center justify-between pt-2">
-                        <div>
-                          <p className="text-[10px] text-gray-500">Starting from</p>
-                          <p className="text-lg font-bold text-[#dc2626]">
-                            PKR {pkg.price.toLocaleString()}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => openBookModal(pkg)}
-                          className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
-                        >
-                          Book Now <ArrowRight size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredPackages.map((pkg) => (
+                <PackageCard
+                  key={pkg.id}
+                  pkg={pkg}
+                  hotels={hotels}
+                  onBook={() => openBookModal(pkg)}
+                />
+              ))}
             </div>
           )}
 

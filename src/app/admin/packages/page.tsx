@@ -3,7 +3,15 @@ import { withPermission } from "@/lib/with-permission";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, X, Upload } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Upload, Eye } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import PackageCard from "@/components/shared/package-card";
+import { UmrahPackage, Hotel } from "@/lib/package-types";
 
 interface Package {
   id: number;
@@ -13,14 +21,15 @@ interface Package {
   return_date: string;
   days: number;
   price: number;
-  visa_price: number;
   hotel_makkah: string;
   hotel_madina: string;
+  makkah_nights: number;
+  madina_nights: number;
   from_city: string;
   to_city: string;
   seats: number;
-  distance_meters: string;
-  arrival_date: string;
+  makkah_hotel_distance: string;
+  madina_hotel_distance: string;
   status: string;
   image_url: string;
   sharing_price: number;
@@ -32,9 +41,11 @@ interface Package {
 function AdminPackagesPage() {
   const router = useRouter();
   const [packages, setPackages] = useState<Package[]>([]);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Package | null>(null);
+  const [previewPkg, setPreviewPkg] = useState<Package | null>(null);
   const [form, setForm] = useState({
     title: "",
     airline: "",
@@ -42,14 +53,15 @@ function AdminPackagesPage() {
     return_date: "",
     days: "",
     price: "",
-    visa_price: "0",
     hotel_makkah: "",
     hotel_madina: "",
+    makkah_nights: "",
+    madina_nights: "",
     from_city: "",
     to_city: "",
     seats: "",
-    distance_meters: "",
-    arrival_date: "",
+    makkah_hotel_distance: "",
+    madina_hotel_distance: "",
     status: "active",
     image_url: "",
     sharing_price: "",
@@ -65,12 +77,19 @@ function AdminPackagesPage() {
     setLoading(false);
   };
 
+  const fetchHotels = async () => {
+    const res = await fetch("/api/admin/hotels");
+    const data = await res.json();
+    setHotels(data.hotels || []);
+  };
+
   useEffect(() => {
     fetchPackages();
+    fetchHotels();
   }, []);
 
   const resetForm = () => {
-    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", visa_price: "0", hotel_makkah: "", hotel_madina: "", from_city: "", to_city: "", seats: "", distance_meters: "", arrival_date: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
+    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", hotel_makkah: "", hotel_madina: "", makkah_nights: "", madina_nights: "", from_city: "", to_city: "", seats: "", makkah_hotel_distance: "", madina_hotel_distance: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -93,7 +112,8 @@ function AdminPackagesPage() {
         ...form,
         days: Number(form.days),
         price: Number(form.price),
-        visa_price: Number(form.visa_price),
+        makkah_nights: Number(form.makkah_nights),
+        madina_nights: Number(form.madina_nights),
         seats: Number(form.seats),
         sharing_price: Number(form.sharing_price),
         double_price: Number(form.double_price),
@@ -126,14 +146,15 @@ function AdminPackagesPage() {
       return_date: pkg.return_date,
       days: String(pkg.days || ""),
       price: String(pkg.price),
-      visa_price: String(pkg.visa_price ?? 0),
       hotel_makkah: pkg.hotel_makkah || "",
       hotel_madina: pkg.hotel_madina || "",
+      makkah_hotel_distance: pkg.makkah_hotel_distance || "",
+      madina_hotel_distance: pkg.madina_hotel_distance || "",
+      makkah_nights: String(pkg.makkah_nights ?? ""),
+      madina_nights: String(pkg.madina_nights ?? ""),
       from_city: pkg.from_city || "",
       to_city: pkg.to_city || "",
       seats: String(pkg.seats ?? ""),
-      distance_meters: pkg.distance_meters || "",
-      arrival_date: pkg.arrival_date || "",
       status: pkg.status || "active",
       image_url: pkg.image_url || "",
       sharing_price: String(pkg.sharing_price || ""),
@@ -182,8 +203,8 @@ function AdminPackagesPage() {
               <input required type="date" value={form.departure_date} onChange={(e) => setForm({ ...form, departure_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Arrival Date</label>
-              <input type="date" value={form.arrival_date} onChange={(e) => setForm({ ...form, arrival_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Return Date</label>
+              <input type="date" value={form.return_date} onChange={(e) => setForm({ ...form, return_date: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Days *</label>
@@ -194,16 +215,28 @@ function AdminPackagesPage() {
               <input required type="number" placeholder="e.g. 150000" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Visa Price (PKR)</label>
-              <input type="number" placeholder="e.g. 15000" value={form.visa_price} onChange={(e) => setForm({ ...form, visa_price: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
-            </div>
-            <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Makkah</label>
               <input placeholder="e.g. Hilton Makkah" value={form.hotel_makkah} onChange={(e) => setForm({ ...form, hotel_makkah: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Hotel Madina</label>
               <input placeholder="e.g. Anwar Al Madina" value={form.hotel_madina} onChange={(e) => setForm({ ...form, hotel_madina: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Makkah Hotel Distance</label>
+              <input placeholder="e.g. 100 Meters" value={form.makkah_hotel_distance} onChange={(e) => setForm({ ...form, makkah_hotel_distance: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Madina Hotel Distance</label>
+              <input placeholder="e.g. 150 Meters" value={form.madina_hotel_distance} onChange={(e) => setForm({ ...form, madina_hotel_distance: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Makkah Nights</label>
+              <input type="number" placeholder="e.g. 6" value={form.makkah_nights} onChange={(e) => setForm({ ...form, makkah_nights: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Madina Nights</label>
+              <input type="number" placeholder="e.g. 3" value={form.madina_nights} onChange={(e) => setForm({ ...form, madina_nights: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">From City/Country</label>
@@ -216,10 +249,6 @@ function AdminPackagesPage() {
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Seats</label>
               <input type="number" placeholder="e.g. 50" value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Distance (Meters)</label>
-              <input placeholder="e.g. 100 Meters" value={form.distance_meters} onChange={(e) => setForm({ ...form, distance_meters: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
 
             <div className="md:col-span-3">
@@ -278,10 +307,10 @@ function AdminPackagesPage() {
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Title</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Airline</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Departure</th>
-                <th className="text-left px-4 py-3 font-bold text-gray-700">Arrival</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Return</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">From / To</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Seats</th>
-                <th className="text-left px-4 py-3 font-bold text-gray-700">Distance</th>
+                <th className="text-left px-4 py-3 font-bold text-gray-700">Hotel Distance</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Days</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Price</th>
                 <th className="text-left px-4 py-3 font-bold text-gray-700">Status</th>
@@ -302,10 +331,10 @@ function AdminPackagesPage() {
                   <td className="px-4 py-3 font-medium">{pkg.title}</td>
                   <td className="px-4 py-3">{pkg.airline}</td>
                   <td className="px-4 py-3">{pkg.departure_date}</td>
-                  <td className="px-4 py-3">{pkg.arrival_date || "-"}</td>
+                  <td className="px-4 py-3">{pkg.return_date || "-"}</td>
                   <td className="px-4 py-3">{pkg.from_city || "-"} → {pkg.to_city || "-"}</td>
                   <td className="px-4 py-3">{pkg.seats ?? "-"}</td>
-                  <td className="px-4 py-3">{pkg.distance_meters || "-"}</td>
+                  <td className="px-4 py-3">{pkg.makkah_hotel_distance || "-"} / {pkg.madina_hotel_distance || "-"}</td>
                   <td className="px-4 py-3">{pkg.days}</td>
                   <td className="px-4 py-3">PKR {Number(pkg.price).toLocaleString()}</td>
                   <td className="px-4 py-3">
@@ -315,8 +344,9 @@ function AdminPackagesPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleEdit(pkg)} className="text-blue-500 hover:text-blue-700"><Pencil size={16} /></button>
-                      <button onClick={() => handleDelete(pkg.id)} className="text-red-500 hover:text-red-700"><Trash2 size={16} /></button>
+                      <button onClick={() => setPreviewPkg(pkg)} className="text-emerald-500 hover:text-emerald-700" title="Preview"><Eye size={16} /></button>
+                      <button onClick={() => handleEdit(pkg)} className="text-blue-500 hover:text-blue-700" title="Edit"><Pencil size={16} /></button>
+                      <button onClick={() => handleDelete(pkg.id)} className="text-red-500 hover:text-red-700" title="Delete"><Trash2 size={16} /></button>
                     </div>
                   </td>
                 </tr>
@@ -326,6 +356,17 @@ function AdminPackagesPage() {
           </table>
         </div>
       </div>
+
+      {previewPkg && (
+        <Dialog open={!!previewPkg} onOpenChange={(open) => !open && setPreviewPkg(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Package Preview</DialogTitle>
+            </DialogHeader>
+            <PackageCard pkg={previewPkg as UmrahPackage} hotels={hotels} variant="admin" />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

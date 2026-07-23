@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { getUmrahPackages } from "@/lib/data";
+import { getUmrahPackages, getHotels } from "@/lib/data";
+import PackageCard from "@/components/shared/package-card";
+import { UmrahPackage, Hotel } from "@/lib/package-types";
 
 export const dynamic = "force-dynamic";
 
@@ -7,7 +9,6 @@ import {
   Plane,
   Shield,
   Headphones,
-  Clock,
   Users,
   MapPin,
   Star,
@@ -37,6 +38,7 @@ export default async function HomePage() {
   ];
 
   const packages = await getUmrahPackages() as any[];
+  const hotels = (await getHotels()) as unknown as Hotel[];
 
   const destinations = [
     {
@@ -143,7 +145,7 @@ export default async function HomePage() {
             className="w-full h-full object-cover"
           >
             <source
-              src="https://videos.pexels.com/video-files/35155731/14893008_1080_1920_30fps.mp4"
+              src="/hero.mp4"
               type="video/mp4"
             />
           </video>
@@ -153,13 +155,13 @@ export default async function HomePage() {
 
         <div className="relative max-w-7xl mx-auto px-4 py-20 w-full">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#dc2626]/20 border border-[#dc2626]/40 text-[#dc2626] text-sm font-medium mb-6 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2563eb]/20 border border-[#2563eb]/40 text-[#2563eb] text-sm font-medium mb-6 backdrop-blur-sm">
               <Sparkles size={14} /> Ministry of Hajj Approved Operator
             </span>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
               Your Sacred Journey,
               <br />
-              <span className="bg-gradient-to-r from-[#dc2626] to-[#2563eb] bg-clip-text text-transparent">
+              <span className="text-white">
                 Seamlessly Organized
               </span>
             </h1>
@@ -171,7 +173,7 @@ export default async function HomePage() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/umrah-packages"
-                className="group inline-flex items-center gap-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white px-7 py-3.5 rounded-lg font-semibold transition-all shadow-lg shadow-[#dc2626]/30 hover:shadow-xl hover:shadow-[#dc2626]/40 hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 bg-[#2563eb] hover:bg-[#1e3a8a] text-white px-7 py-3.5 rounded-lg font-semibold transition-all shadow-lg shadow-[#2563eb]/30 hover:shadow-xl hover:shadow-[#2563eb]/40 hover:-translate-y-0.5"
               >
                 Explore Packages
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -192,7 +194,7 @@ export default async function HomePage() {
                 { icon: Users, label: "18,000+ Pilgrims" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2 text-white/80">
-                  <item.icon size={20} className="text-[#dc2626]" />
+                  <item.icon size={20} className="text-[#2563eb]" />
                   <span className="text-sm font-medium">{item.label}</span>
                 </div>
               ))}
@@ -206,7 +208,7 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#dc2626] to-[#2563eb] bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#2563eb] to-[#1e3a8a] bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
               <div className="text-sm text-gray-300 uppercase tracking-wider">
@@ -221,7 +223,7 @@ export default async function HomePage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <span className="text-[#dc2626] font-semibold text-sm uppercase tracking-wider">
+            <span className="text-[#2563eb] font-semibold text-sm uppercase tracking-wider">
               Popular Packages
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#0c1d4a] mt-2 mb-4">
@@ -239,64 +241,22 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {packages.slice(0, 6).map((pkg) => {
-                const img = pkg.image_url || fallbackImages[pkg.airline] || fallbackImages["Saudia"];
-                const desc = pkg.hotel_makkah && pkg.hotel_madina
-                  ? `Round-trip flights, stays at ${pkg.hotel_makkah} in Makkah and ${pkg.hotel_madina} in Madinah.`
-                  : "Premium Umrah package with flights, hotels, visa and transfers.";
-                return (
-                  <Link
-                    key={pkg.id}
-                    href="/umrah-packages"
-                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100"
-                  >
-                    <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={img}
-                        alt={pkg.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#dc2626] text-white text-xs font-bold uppercase tracking-wider shadow-lg">
-                        {pkg.airline}
-                      </span>
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                        <span className="text-sm font-medium flex items-center gap-1.5">
-                          <Clock size={14} /> {pkg.days} Days / {pkg.days - 1} Nights
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                        <Plane size={14} className="text-[#dc2626]" />
-                        {pkg.airline}
-                      </div>
-                      <h3 className="text-xl font-bold text-[#0c1d4a] mb-2 group-hover:text-[#dc2626] transition-colors">
-                        {pkg.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                        {desc}
-                      </p>
-                      <div className="flex items-end justify-between pt-4 border-t border-gray-100">
-                        <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider">Starting from</p>
-                          <p className="text-2xl font-bold text-[#0c1d4a]">PKR {pkg.price?.toLocaleString()}</p>
-                        </div>
-                        <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#dc2626] group-hover:gap-2 transition-all">
-                          Book Now <ArrowRight size={16} />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {packages.slice(0, 6).map((pkg: UmrahPackage) => (
+                <Link
+                  key={pkg.id}
+                  href="/umrah-packages"
+                  className="block focus:outline-none"
+                >
+                  <PackageCard pkg={pkg} hotels={hotels} variant="featured" className="h-full" />
+                </Link>
+              ))}
             </div>
           )}
 
           <div className="text-center mt-10">
             <Link
               href="/umrah-packages"
-              className="inline-flex items-center gap-2 text-[#dc2626] hover:text-[#b91c1c] font-semibold"
+              className="inline-flex items-center gap-2 text-[#2563eb] hover:text-[#1e3a8a] font-semibold"
             >
               View All Packages <ArrowRight size={18} />
             </Link>
@@ -304,57 +264,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Sacred Destinations */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-14 max-w-2xl mx-auto">
-            <span className="text-[#dc2626] font-semibold text-sm uppercase tracking-wider">
-              Sacred Destinations
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#0c1d4a] mt-2 mb-4">
-              Journey to the Holy Cities
-            </h2>
-            <p className="text-gray-600">
-              Visit the most sacred sites in Islam with our expertly guided tours
-              and premium accommodations.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {destinations.map((dest, idx) => (
-              <div
-                key={dest.name}
-                className={`relative rounded-2xl overflow-hidden group h-80 ${
-                  idx === 0 ? "md:row-span-2 md:h-auto" : ""
-                }`}
-              >
-                <img
-                  src={dest.image}
-                  alt={dest.name}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1e3a8a] via-[#1e3a8a]/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin size={16} className="text-[#dc2626]" />
-                    <span className="text-xs uppercase tracking-wider text-gray-200">
-                      Saudi Arabia
-                    </span>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-1">{dest.name}</h3>
-                  <p className="text-sm text-gray-200">{dest.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose Us */}
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <span className="text-[#dc2626] font-semibold text-sm uppercase tracking-wider">
+            <span className="text-[#2563eb] font-semibold text-sm uppercase tracking-wider">
               Why Choose Musa Travel Service
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#0c1d4a] mt-2 mb-4">
@@ -370,7 +285,7 @@ export default async function HomePage() {
             {features.map((item) => (
               <div
                 key={item.title}
-                className="group bg-white rounded-2xl border border-gray-100 hover:border-[#dc2626]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                className="group bg-white rounded-2xl border border-gray-100 hover:border-[#2563eb]/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
               >
                 <div className="relative h-44 overflow-hidden">
                   <img
@@ -379,12 +294,12 @@ export default async function HomePage() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0c1d4a]/70 via-[#0c1d4a]/10 to-transparent" />
-                  <div className="absolute -bottom-6 left-5 w-14 h-14 bg-gradient-to-br from-[#dc2626] to-[#b91c1c] rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white">
+                  <div className="absolute -bottom-6 left-5 w-14 h-14 bg-gradient-to-br from-[#2563eb] to-[#1e3a8a] rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white">
                     <item.icon className="text-white" size={26} />
                   </div>
                 </div>
                 <div className="p-7 pt-9">
-                  <h3 className="text-lg font-bold text-[#0c1d4a] mb-2 group-hover:text-[#dc2626] transition-colors">
+                  <h3 className="text-lg font-bold text-[#0c1d4a] mb-2 group-hover:text-[#2563eb] transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
@@ -408,7 +323,7 @@ export default async function HomePage() {
         </div>
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="text-center mb-14 max-w-2xl mx-auto">
-            <span className="text-[#dc2626] font-semibold text-sm uppercase tracking-wider">
+            <span className="text-[#2563eb] font-semibold text-sm uppercase tracking-wider">
               Testimonials
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
@@ -427,7 +342,7 @@ export default async function HomePage() {
               >
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} size={16} className="fill-[#dc2626] text-[#dc2626]" />
+                    <Star key={i} size={16} className="fill-[#2563eb] text-[#2563eb]" />
                   ))}
                 </div>
                 <p className="text-gray-200 leading-relaxed mb-6 italic">
@@ -444,7 +359,7 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Banner */}
-      {/* <section className="py-16 bg-gradient-to-r from-[#dc2626] to-[#b91c1c] text-white">
+      {/* <section className="py-16 bg-gradient-to-r from-[#2563eb] to-[#1e3a8a] text-white">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <Heart className="shrink-0" size={40} />
@@ -459,7 +374,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/agent/login"
-            className="inline-flex items-center gap-2 bg-white text-[#dc2626] px-7 py-3.5 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
+            className="inline-flex items-center gap-2 bg-white text-[#2563eb] px-7 py-3.5 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg"
           >
             Register Now <ArrowRight size={18} />
           </Link>
@@ -470,7 +385,7 @@ export default async function HomePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <span className="text-[#dc2626] font-semibold text-sm uppercase tracking-wider">
+            <span className="text-[#2563eb] font-semibold text-sm uppercase tracking-wider">
               Get In Touch
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#0c1d4a] mt-2 mb-6">
@@ -482,9 +397,9 @@ export default async function HomePage() {
             </p>
 
             <div className="space-y-4">
-              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#dc2626]/30 transition-colors">
-                <div className="w-11 h-11 rounded-lg bg-[#dc2626]/10 flex items-center justify-center shrink-0">
-                  <MapPin className="text-[#dc2626]" size={20} />
+              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#2563eb]/30 transition-colors">
+                <div className="w-11 h-11 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
+                  <MapPin className="text-[#2563eb]" size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#0c1d4a] mb-1">Head Office</h4>
@@ -494,9 +409,9 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#dc2626]/30 transition-colors">
-                <div className="w-11 h-11 rounded-lg bg-[#dc2626]/10 flex items-center justify-center shrink-0">
-                  <Phone className="text-[#dc2626]" size={20} />
+              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#2563eb]/30 transition-colors">
+                <div className="w-11 h-11 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
+                  <Phone className="text-[#2563eb]" size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#0c1d4a] mb-1">Call / WhatsApp</h4>
@@ -506,9 +421,9 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#dc2626]/30 transition-colors">
-                <div className="w-11 h-11 rounded-lg bg-[#dc2626]/10 flex items-center justify-center shrink-0">
-                  <Mail className="text-[#dc2626]" size={20} />
+              <div className="flex items-start gap-4 p-5 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#2563eb]/30 transition-colors">
+                <div className="w-11 h-11 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
+                  <Mail className="text-[#2563eb]" size={20} />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#0c1d4a] mb-1">Email</h4>

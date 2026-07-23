@@ -32,7 +32,6 @@ interface BookingDetail {
   package_return: string;
   package_days: number;
   package_price: number;
-  package_visa_price: number;
   hotel_makkah: string;
   hotel_madina: string;
   transport_included: number;
