@@ -65,7 +65,7 @@ export default function PackageCard({
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border overflow-hidden flex flex-col transition-shadow ${className}`}
+      className={`bg-white rounded-xl shadow-sm hover:shadow-[0_8px_30px_rgba(37,99,235,0.18)] border border-[#2563eb]/20 overflow-hidden flex flex-col transition-shadow ${className}`}
     >
       {/* Airline header */}
       <div className="relative h-44 shrink-0">
@@ -101,7 +101,7 @@ export default function PackageCard({
 
         {/* Flight segments */}
         <div className="space-y-2 mb-3">
-          <div className="flex items-center justify-between text-xs bg-white border rounded-lg p-2.5">
+          <div className="flex items-center justify-between text-xs bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
             <div className="flex items-center gap-2 font-bold text-[#0c1d4a]">
               <span>{fromCode}</span>
               <Plane size={12} className="text-amber-500" />
@@ -117,7 +117,7 @@ export default function PackageCard({
             </div>
           </div>
           {pkg.return_date && (
-            <div className="flex items-center justify-between text-xs bg-white border rounded-lg p-2.5">
+            <div className="flex items-center justify-between text-xs bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
               <div className="flex items-center gap-2 font-bold text-[#0c1d4a]">
                 <span>{toCode}</span>
                 <Plane size={12} className="text-amber-500" />
@@ -146,13 +146,13 @@ export default function PackageCard({
         {/* Hotel rows */}
         <div className="space-y-2 mb-3">
           {pkg.hotel_makkah && (
-            <div className="flex items-center justify-between bg-white border rounded-lg p-2.5">
+            <div className="flex items-center justify-between bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                   {makkahImage ? (
                     <img src={makkahImage} alt={pkg.hotel_makkah} className="w-full h-full object-cover" />
                   ) : (
-                    <CircleDot size={16} className="text-[#dc2626]" />
+                    <CircleDot size={16} className="text-[#2563eb]" />
                   )}
                 </div>
                 <div className="min-w-0">
@@ -168,7 +168,7 @@ export default function PackageCard({
             </div>
           )}
           {pkg.hotel_madina && (
-            <div className="flex items-center justify-between bg-white border rounded-lg p-2.5">
+            <div className="flex items-center justify-between bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                   {madinaImage ? (
@@ -190,13 +190,13 @@ export default function PackageCard({
             </div>
           )}
           {pkg.hotel_makkah && (
-            <div className="flex items-center justify-between bg-white border rounded-lg p-2.5">
+            <div className="flex items-center justify-between bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                   {makkahImage ? (
                     <img src={makkahImage} alt={pkg.hotel_makkah} className="w-full h-full object-cover" />
                   ) : (
-                    <CircleDot size={16} className="text-[#dc2626]" />
+                    <CircleDot size={16} className="text-[#2563eb]" />
                   )}
                 </div>
                 <div className="min-w-0">
@@ -225,7 +225,7 @@ export default function PackageCard({
                   className="w-8 h-8 rounded-full object-cover mx-auto mb-1 border"
                 />
                 <p className="text-[10px] font-bold text-[#0c1d4a] mb-1">{rt.label}</p>
-                <p className="text-xs font-bold text-[#dc2626]">PKR {formatPrice(price)}</p>
+                <p className="text-xs font-bold text-[#2563eb]">PKR {formatPrice(price)}</p>
               </div>
             );
           })}
@@ -235,13 +235,13 @@ export default function PackageCard({
         <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100">
           <div>
             <p className="text-[10px] text-gray-500">Starting from</p>
-            <p className="text-lg font-bold text-[#dc2626]">PKR {formatPrice(pkg.price)}</p>
+            <p className="text-lg font-bold text-[#2563eb]">PKR {formatPrice(pkg.price)}</p>
           </div>
           <div className="flex items-center gap-2">
             {onBook && (
               <button
                 onClick={() => onBook(pkg)}
-                className="bg-[#dc2626] hover:bg-[#b91c1c] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                className="bg-[#2563eb] hover:bg-[#1e3a8a] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
               >
                 Book Now <ArrowRight size={14} />
               </button>
@@ -258,7 +258,7 @@ export default function PackageCard({
             {onDelete && (
               <button
                 onClick={() => onDelete(pkg)}
-                className="text-red-500 hover:text-red-700 p-1.5"
+                className="text-[#2563eb] hover:text-[#1e3a8a] p-1.5"
                 title="Delete"
               >
                 <Trash2 size={16} />
