@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export default function WhatsAppFloat({ phone = "03390000007" }: { phone?: string }) {
   const cleaned = phone.replace(/\D/g, "");
   const href = `https://api.whatsapp.com/send?phone=92${cleaned.slice(-10)}`;
@@ -10,16 +12,15 @@ export default function WhatsAppFloat({ phone = "03390000007" }: { phone?: strin
       target="_blank"
       rel="noreferrer"
       aria-label="Chat on WhatsApp"
-      className="fixed bottom-5 right-5 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+      className="fixed bottom-5 right-5 z-50 flex items-center justify-center w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden bg-white"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 448 512"
-        fill="currentColor"
-        className="w-7 h-7"
-      >
-        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.8-6.9c-31.5-44.8-46.2-99.6-41.7-154.8 8.5-97.2 95-173.4 193.4-173.4 51.4.1 99.8 20.1 136.1 56.1 36.1 36.1 56.1 84.7 56.1 136.1-.2 98.4-76.5 184.8-173.7 193.3zm86.4-117.5c-4.7-2.4-27.8-13.7-32.1-15.2-4.3-1.5-7.4-2.4-10.5 2.4-3.1 4.8-12.1 15.2-14.8 18.3-2.7 3.1-5.4 3.5-10.1 1.2-4.7-2.4-19.9-7.3-37.9-23.3-14-12.5-23.5-27.9-26.2-32.6-2.7-4.7-1.2-8.6.9-11.4 1.8-2.4 4.7-5.4 7.1-8.1 2.4-2.7 3.1-4.8 4.7-7.4 1.5-2.7.9-5.4-.3-7.4-1.2-2.1-10.5-25.3-14.3-34.5-3.8-9.2-7.6-7.9-10.5-8.1-2.7-.1-5.7-.2-8.8-.2-3.1 0-8.1 1.2-12.3 5.4-4.2 4.3-16.1 15.7-16.1 38.3 0 22.6 16.4 44.4 18.7 47.4 2.4 3.1 32.3 49.4 78.3 67.9 44.5 17.5 53.8 14.1 63.5 13.2 9.9-.9 31.9-13 36.4-25.6 4.5-12.6 4.5-23.4 3.1-25.6-1.5-2.2-4.3-3.5-10.1-5.4z" />
-      </svg>
+      <Image
+        src="/whatsapp-icon.svg"
+        alt="WhatsApp"
+        width={56}
+        height={56}
+        className="w-full h-full object-contain"
+      />
     </a>
   );
 }
