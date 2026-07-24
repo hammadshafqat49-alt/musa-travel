@@ -26,6 +26,9 @@ export interface UmrahPackage {
   hotel_madina?: string;
   makkah_nights?: number;
   madina_nights?: number;
+  hotel_makkah_2?: string;
+  makkah_hotel_distance_2?: string;
+  makkah_nights_2?: number;
   from_city?: string;
   to_city?: string;
   seats?: number;

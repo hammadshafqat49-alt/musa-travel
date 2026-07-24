@@ -24,6 +24,9 @@ export default function AgentPackagesPage() {
     madina_hotel_distance: "",
     makkah_nights: "",
     madina_nights: "",
+    hotel_makkah_2: "",
+    makkah_hotel_distance_2: "",
+    makkah_nights_2: "",
     image_url: "",
     sharing_price: "",
     double_price: "",
@@ -63,6 +66,9 @@ export default function AgentPackagesPage() {
       madina_hotel_distance: "",
       makkah_nights: "",
       madina_nights: "",
+      hotel_makkah_2: "",
+      makkah_hotel_distance_2: "",
+      makkah_nights_2: "",
       image_url: "",
       sharing_price: "",
       double_price: "",
@@ -81,6 +87,7 @@ export default function AgentPackagesPage() {
       price: Number(form.price),
       makkah_nights: Number(form.makkah_nights),
       madina_nights: Number(form.madina_nights),
+      makkah_nights_2: Number(form.makkah_nights_2),
     };
     if (editing) {
       await fetch("/api/agent/packages", {
@@ -113,6 +120,9 @@ export default function AgentPackagesPage() {
       madina_hotel_distance: pkg.madina_hotel_distance || "",
       makkah_nights: String(pkg.makkah_nights || ""),
       madina_nights: String(pkg.madina_nights || ""),
+      hotel_makkah_2: pkg.hotel_makkah_2 || "",
+      makkah_hotel_distance_2: pkg.makkah_hotel_distance_2 || "",
+      makkah_nights_2: String(pkg.makkah_nights_2 || ""),
       image_url: pkg.image_url || "",
       sharing_price: String(pkg.sharing_price || ""),
       double_price: String(pkg.double_price || ""),
@@ -164,6 +174,9 @@ export default function AgentPackagesPage() {
             <input placeholder="Madina Hotel Distance" value={form.madina_hotel_distance} onChange={(e) => setForm({ ...form, madina_hotel_distance: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Makkah Nights" value={form.makkah_nights} onChange={(e) => setForm({ ...form, makkah_nights: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Madina Nights" value={form.madina_nights} onChange={(e) => setForm({ ...form, madina_nights: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input placeholder="2nd Makkah Hotel" value={form.hotel_makkah_2} onChange={(e) => setForm({ ...form, hotel_makkah_2: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input placeholder="2nd Makkah Distance" value={form.makkah_hotel_distance_2} onChange={(e) => setForm({ ...form, makkah_hotel_distance_2: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
+            <input type="number" placeholder="2nd Makkah Nights" value={form.makkah_nights_2} onChange={(e) => setForm({ ...form, makkah_nights_2: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input placeholder="Image URL (Unsplash)" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Sharing Price" value={form.sharing_price} onChange={(e) => setForm({ ...form, sharing_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />
             <input type="number" placeholder="Double Price" value={form.double_price} onChange={(e) => setForm({ ...form, double_price: e.target.value })} className="px-3 py-2 border rounded-md text-sm" />

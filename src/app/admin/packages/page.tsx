@@ -25,6 +25,9 @@ interface Package {
   hotel_madina: string;
   makkah_nights: number;
   madina_nights: number;
+  hotel_makkah_2: string;
+  makkah_hotel_distance_2: string;
+  makkah_nights_2: number;
   from_city: string;
   to_city: string;
   seats: number;
@@ -57,6 +60,9 @@ function AdminPackagesPage() {
     hotel_madina: "",
     makkah_nights: "",
     madina_nights: "",
+    hotel_makkah_2: "",
+    makkah_hotel_distance_2: "",
+    makkah_nights_2: "",
     from_city: "",
     to_city: "",
     seats: "",
@@ -89,7 +95,7 @@ function AdminPackagesPage() {
   }, []);
 
   const resetForm = () => {
-    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", hotel_makkah: "", hotel_madina: "", makkah_nights: "", madina_nights: "", from_city: "", to_city: "", seats: "", makkah_hotel_distance: "", madina_hotel_distance: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
+    setForm({ title: "", airline: "", departure_date: "", return_date: "", days: "", price: "", hotel_makkah: "", hotel_madina: "", makkah_nights: "", madina_nights: "", hotel_makkah_2: "", makkah_hotel_distance_2: "", makkah_nights_2: "", from_city: "", to_city: "", seats: "", makkah_hotel_distance: "", madina_hotel_distance: "", status: "active", image_url: "", sharing_price: "", double_price: "", triple_price: "", quad_price: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -114,6 +120,7 @@ function AdminPackagesPage() {
         price: Number(form.price),
         makkah_nights: Number(form.makkah_nights),
         madina_nights: Number(form.madina_nights),
+        makkah_nights_2: Number(form.makkah_nights_2),
         seats: Number(form.seats),
         sharing_price: Number(form.sharing_price),
         double_price: Number(form.double_price),
@@ -152,6 +159,9 @@ function AdminPackagesPage() {
       madina_hotel_distance: pkg.madina_hotel_distance || "",
       makkah_nights: String(pkg.makkah_nights ?? ""),
       madina_nights: String(pkg.madina_nights ?? ""),
+      hotel_makkah_2: pkg.hotel_makkah_2 || "",
+      makkah_hotel_distance_2: pkg.makkah_hotel_distance_2 || "",
+      makkah_nights_2: String(pkg.makkah_nights_2 ?? ""),
       from_city: pkg.from_city || "",
       to_city: pkg.to_city || "",
       seats: String(pkg.seats ?? ""),
@@ -237,6 +247,18 @@ function AdminPackagesPage() {
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">Madina Nights</label>
               <input type="number" placeholder="e.g. 3" value={form.madina_nights} onChange={(e) => setForm({ ...form, madina_nights: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">2nd Makkah Hotel</label>
+              <input placeholder="e.g. Raffles Makkah" value={form.hotel_makkah_2} onChange={(e) => setForm({ ...form, hotel_makkah_2: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">2nd Makkah Distance</label>
+              <input placeholder="e.g. 150 Meters" value={form.makkah_hotel_distance_2} onChange={(e) => setForm({ ...form, makkah_hotel_distance_2: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#0c1d4a] mb-1">2nd Makkah Nights</label>
+              <input type="number" placeholder="e.g. 6" value={form.makkah_nights_2} onChange={(e) => setForm({ ...form, makkah_nights_2: e.target.value })} className="w-full px-3 py-2 border rounded-md text-sm" />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#0c1d4a] mb-1">From City/Country</label>

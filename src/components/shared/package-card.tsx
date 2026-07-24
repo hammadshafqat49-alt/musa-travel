@@ -20,7 +20,7 @@ import {
   formatPackageDate,
   getAirportCode,
   getNightsSplit,
-  getRoomPrice,
+  getExplicitRoomPrice,
   getDistanceLabel,
   findHotelImageByName,
   findHotelDistanceByName,
@@ -57,11 +57,14 @@ export default function PackageCard({
   const toCode = getAirportCode(pkg.to_city);
   const makkahNights = pkg.makkah_nights ?? getNightsSplit(pkg.days).makkah;
   const madinaNights = pkg.madina_nights ?? getNightsSplit(pkg.days).madina;
+  const makkahNights2 = pkg.makkah_nights_2 ?? 0;
   const featured = variant === "featured";
   const makkahImage = findHotelImageByName(hotels, pkg.hotel_makkah, "makkah");
   const madinaImage = findHotelImageByName(hotels, pkg.hotel_madina, "madina");
+  const makkahImage2 = findHotelImageByName(hotels, pkg.hotel_makkah_2, "makkah");
   const makkahDistance = findHotelDistanceByName(hotels, pkg.hotel_makkah, pkg.makkah_hotel_distance || "Near Haram");
   const madinaDistance = findHotelDistanceByName(hotels, pkg.hotel_madina, pkg.madina_hotel_distance || "Near Haram");
+  const makkahDistance2 = findHotelDistanceByName(hotels, pkg.hotel_makkah_2, pkg.makkah_hotel_distance_2 || "Near Haram");
 
   return (
     <div
@@ -189,25 +192,25 @@ export default function PackageCard({
               </div>
             </div>
           )}
-          {pkg.hotel_makkah && (
+          {pkg.hotel_makkah_2 && (
             <div className="flex items-center justify-between bg-white border border-[#2563eb]/30 rounded-lg p-2.5">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                  {makkahImage ? (
-                    <img src={makkahImage} alt={pkg.hotel_makkah} className="w-full h-full object-cover" />
+                  {makkahImage2 ? (
+                    <img src={makkahImage2} alt={pkg.hotel_makkah_2} className="w-full h-full object-cover" />
                   ) : (
                     <CircleDot size={16} className="text-[#2563eb]" />
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-[#0c1d4a] truncate">{pkg.hotel_makkah}</p>
+                  <p className="text-xs font-bold text-[#0c1d4a] truncate">{pkg.hotel_makkah_2}</p>
                   <p className="text-[10px] text-gray-500 flex items-center gap-1">
-                    <MapPin size={10} /> {getDistanceLabel(makkahDistance, "Near Haram")}
+                    <MapPin size={10} /> {getDistanceLabel(makkahDistance2, "Near Haram")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1 text-[10px] text-[#0c1d4a] font-bold shrink-0">
-                <Moon size={10} /> {makkahNights} Nights
+                <Moon size={10} /> {makkahNights2} Nights
               </div>
             </div>
           )}
@@ -216,7 +219,7 @@ export default function PackageCard({
         {/* Room price cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
           {roomTypes.map((rt) => {
-            const price = getRoomPrice(pkg, rt.key);
+            const price = getExplicitRoomPrice(pkg, rt.key);
             return (
               <div key={rt.key} className="bg-gray-50 rounded-lg p-2 text-center border">
                 <img
@@ -225,7 +228,9 @@ export default function PackageCard({
                   className="w-8 h-8 rounded-full object-cover mx-auto mb-1 border"
                 />
                 <p className="text-[10px] font-bold text-[#0c1d4a] mb-1">{rt.label}</p>
-                <p className="text-xs font-bold text-[#2563eb]">PKR {formatPrice(price)}</p>
+                <p className="text-xs font-bold text-[#2563eb]">
+                  {price ? `PKR ${formatPrice(price)}` : "Not Available"}
+                </p>
               </div>
             );
           })}

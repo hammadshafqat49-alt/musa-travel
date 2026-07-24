@@ -75,6 +75,9 @@ export async function initDb() {
       madina_hotel_distance TEXT,
       makkah_nights INTEGER,
       madina_nights INTEGER,
+      hotel_makkah_2 TEXT,
+      makkah_hotel_distance_2 TEXT,
+      makkah_nights_2 INTEGER,
       transport_included INTEGER DEFAULT 0,
       type TEXT DEFAULT 'umrah',
       status TEXT DEFAULT 'active',
@@ -277,6 +280,9 @@ export async function initDb() {
   try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN madina_hotel_distance TEXT").run(); } catch {}
   try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN makkah_nights INTEGER").run(); } catch {}
   try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN madina_nights INTEGER").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN hotel_makkah_2 TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN makkah_hotel_distance_2 TEXT").run(); } catch {}
+  try { await db.prepare("ALTER TABLE umrah_packages ADD COLUMN makkah_nights_2 INTEGER").run(); } catch {}
   try { await db.prepare("ALTER TABLE hotels ADD COLUMN image_url TEXT").run(); } catch {}
 
   // ---- Clean up removed columns ----

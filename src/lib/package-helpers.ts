@@ -65,6 +65,14 @@ export function getRoomPrice(pkg: UmrahPackage, roomType: string): number {
   return pkg.price || 0;
 }
 
+export function getExplicitRoomPrice(pkg: UmrahPackage, roomType: string): number | null {
+  if (roomType === "sharing") return pkg.sharing_price || null;
+  if (roomType === "double") return pkg.double_price || null;
+  if (roomType === "triple") return pkg.triple_price || null;
+  if (roomType === "quad") return pkg.quad_price || null;
+  return pkg.price || null;
+}
+
 export function getDistanceLabel(distance?: string | null, fallback = "Walking distance"): string {
   if (!distance) return fallback;
   return distance;

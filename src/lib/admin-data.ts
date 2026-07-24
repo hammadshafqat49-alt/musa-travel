@@ -68,8 +68,8 @@ export async function getAllUmrahPackages() {
 
 export async function createUmrahPackage(data: any) {
   const stmt = db.prepare(`
-    INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, hotel_makkah, hotel_madina, makkah_nights, madina_nights, from_city, to_city, seats, makkah_hotel_distance, madina_hotel_distance, status, image_url, sharing_price, double_price, triple_price, quad_price)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO umrah_packages (title, airline, departure_date, return_date, days, price, hotel_makkah, hotel_madina, makkah_nights, madina_nights, hotel_makkah_2, makkah_hotel_distance_2, makkah_nights_2, from_city, to_city, seats, makkah_hotel_distance, madina_hotel_distance, status, image_url, sharing_price, double_price, triple_price, quad_price)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   return stmt.run(
     data.title,
@@ -82,6 +82,9 @@ export async function createUmrahPackage(data: any) {
     data.hotel_madina || '',
     Number(data.makkah_nights) || 0,
     Number(data.madina_nights) || 0,
+    data.hotel_makkah_2 || '',
+    data.makkah_hotel_distance_2 || '',
+    Number(data.makkah_nights_2) || 0,
     data.from_city || '',
     data.to_city || '',
     Number(data.seats) || 0,
@@ -98,7 +101,7 @@ export async function createUmrahPackage(data: any) {
 
 export async function updateUmrahPackage(id: number, data: any) {
   const stmt = db.prepare(`
-    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?, price = ?, hotel_makkah = ?, hotel_madina = ?, makkah_nights = ?, madina_nights = ?, from_city = ?, to_city = ?, seats = ?, makkah_hotel_distance = ?, madina_hotel_distance = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
+    UPDATE umrah_packages SET title = ?, airline = ?, departure_date = ?, return_date = ?, days = ?, price = ?, hotel_makkah = ?, hotel_madina = ?, makkah_nights = ?, madina_nights = ?, hotel_makkah_2 = ?, makkah_hotel_distance_2 = ?, makkah_nights_2 = ?, from_city = ?, to_city = ?, seats = ?, makkah_hotel_distance = ?, madina_hotel_distance = ?, status = ?, image_url = ?, sharing_price = ?, double_price = ?, triple_price = ?, quad_price = ?
     WHERE id = ?
   `);
   await stmt.run(
@@ -112,6 +115,9 @@ export async function updateUmrahPackage(id: number, data: any) {
     data.hotel_madina || '',
     Number(data.makkah_nights) || 0,
     Number(data.madina_nights) || 0,
+    data.hotel_makkah_2 || '',
+    data.makkah_hotel_distance_2 || '',
+    Number(data.makkah_nights_2) || 0,
     data.from_city || '',
     data.to_city || '',
     Number(data.seats) || 0,
